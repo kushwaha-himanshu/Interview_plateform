@@ -1,21 +1,19 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Bell,
   BrainCircuit,
   BriefcaseBusiness,
   Code2,
   FileText,
   GitFork,
-  Moon,
   Network,
-  Search,
   UsersRound,
   CheckCircle2,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import DashboardLayout from "../components/DashboardLayout";
+import Topbar from "../components/Topbar";
 import "./InterviewSetup.css";
 
 const categories = [
@@ -42,86 +40,69 @@ export default function InterviewSetup() {
   const navigate = useNavigate();
   const select = (key, value) => setSettings({ ...settings, [key]: value });
   return (
-    <div className="dashboard-shell">
-      <Sidebar />
-      <main className="dashboard-main">
-        <header className="dashboard-topbar">
-          <label className="dashboard-search">
-            <Search size={19} />
-            <input placeholder="Search..." />
-          </label>
-          <div className="topbar-actions">
-            <button>
-              <Bell size={20} />
-            </button>
-            <button>
-              <Moon size={20} />
-            </button>
-            <span className="small-avatar">NG</span>
-          </div>
+    <DashboardLayout>
+      <Topbar avatarText="NG" />
+      <section className="setup-page">
+        <header className="setup-heading">
+          <Link to="/dashboard">
+            <ArrowLeft size={18} />
+            Back
+          </Link>
+          <h1>Start Interview</h1>
+          <p>Choose your interview type and preferences</p>
         </header>
-        <section className="setup-page">
-          <header className="setup-heading">
-            <Link to="/dashboard">
-              <ArrowLeft size={18} />
-              Back
-            </Link>
-            <h1>Start Interview</h1>
-            <p>Choose your interview type and preferences</p>
-          </header>
-          <section>
-            <h2>Interview Category</h2>
-            <div className="category-grid">
-              {categories.map(([Icon, title, description]) => (
-                <button
-                  key={title}
-                  className={`category-card ${category === title ? "selected" : ""}`}
-                  onClick={() => setCategory(title)}
-                >
-                  {category === title && (
-                    <CheckCircle2 className="selected-icon" size={19} />
-                  )}
-                  <span>
-                    <Icon size={21} />
-                  </span>
-                  <b>{title}</b>
-                  <p>{description}</p>
-                </button>
-              ))}
-            </div>
-          </section>
-          <div className="setup-settings">
-            <OptionGroup
-              title="Difficulty Level"
-              setting="difficulty"
-              values={choices.difficulty}
-              value={settings.difficulty}
-              onSelect={select}
-            />
-            <OptionGroup
-              title="Interviewer Style"
-              setting="style"
-              values={choices.style}
-              value={settings.style}
-              onSelect={select}
-            />
-            <OptionGroup
-              wide
-              title="Duration"
-              setting="duration"
-              values={choices.duration}
-              value={settings.duration}
-              onSelect={select}
-            />
-          </div>
-          <div className="setup-action">
-            <button onClick={() => navigate("/interview")}>
-              Start AI Interview <ArrowRight size={19} />
-            </button>
+        <section>
+          <h2>Interview Category</h2>
+          <div className="category-grid">
+            {categories.map(([Icon, title, description]) => (
+              <button
+                key={title}
+                className={`category-card ${category === title ? "selected" : ""}`}
+                onClick={() => setCategory(title)}
+              >
+                {category === title && (
+                  <CheckCircle2 className="selected-icon" size={19} />
+                )}
+                <span>
+                  <Icon size={21} />
+                </span>
+                <b>{title}</b>
+                <p>{description}</p>
+              </button>
+            ))}
           </div>
         </section>
-      </main>
-    </div>
+        <div className="setup-settings">
+          <OptionGroup
+            title="Difficulty Level"
+            setting="difficulty"
+            values={choices.difficulty}
+            value={settings.difficulty}
+            onSelect={select}
+          />
+          <OptionGroup
+            title="Interviewer Style"
+            setting="style"
+            values={choices.style}
+            value={settings.style}
+            onSelect={select}
+          />
+          <OptionGroup
+            wide
+            title="Duration"
+            setting="duration"
+            values={choices.duration}
+            value={settings.duration}
+            onSelect={select}
+          />
+        </div>
+        <div className="setup-action">
+          <button onClick={() => navigate("/interview")}>
+            Start AI Interview <ArrowRight size={19} />
+          </button>
+        </div>
+      </section>
+    </DashboardLayout>
   );
 }
 function OptionGroup({ title, setting, values, value, onSelect, wide }) {

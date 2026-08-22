@@ -1,6 +1,6 @@
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -10,7 +10,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-export default function ChartCard({ data }) {
+export default function BarChartCard({ data }) {
   const [range, setRange] = useState(12);
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
@@ -28,9 +28,9 @@ export default function ChartCard({ data }) {
   const filteredData = data ? data.slice(-range) : [];
 
   return (
-    <section className="dashboard-card chart-card">
-      <div className="card-heading">
-        <h3>Performance Overview</h3>
+    <article className="dashboard-card analytics-card">
+      <div className="chart-title">
+        <h2>Score Trend</h2>
         <div className="range-selector-wrap" ref={containerRef}>
           <button
             type="button"
@@ -76,59 +76,36 @@ export default function ChartCard({ data }) {
           )}
         </div>
       </div>
-      <div className="performance-chart">
+      <div className="bar-chart">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={filteredData} margin={{ left: -17, right: 8, top: 10 }}>
-            <defs>
-              <linearGradient id="performanceArea" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#7c3aed" stopOpacity=".25" />
-                <stop offset="100%" stopColor="#4cd7f6" stopOpacity="0" />
-              </linearGradient>
-            </defs>
+          <BarChart data={filteredData}>
             <CartesianGrid
               vertical={false}
               stroke="#4a4455"
-              strokeOpacity=".28"
+              strokeOpacity={0.3}
             />
             <XAxis
               dataKey="session"
-              tickLine={false}
-              axisLine={false}
               tick={{ fill: "#958da1", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
             />
             <YAxis
               domain={[0, 100]}
-              ticks={[0, 25, 50, 75, 100]}
-              tickLine={false}
-              axisLine={false}
               tick={{ fill: "#958da1", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
             />
             <Tooltip
               contentStyle={{
                 background: "#1c2b3c",
                 border: "1px solid #4a4455",
-                borderRadius: 6,
               }}
-              labelStyle={{ color: "#ccc3d8" }}
-              itemStyle={{ color: "#fff" }}
             />
-            <Area
-              type="monotone"
-              dataKey="score"
-              stroke="url(#performanceStroke)"
-              strokeWidth={3}
-              fill="url(#performanceArea)"
-              dot={{ r: 3, fill: "#d2bbff", stroke: "#0d0d18", strokeWidth: 2 }}
-              activeDot={{ r: 5 }}
-            />
-            <linearGradient id="performanceStroke" x1="0" x2="1" y1="0" y2="0">
-              <stop offset="0%" stopColor="#732ee4" />
-              <stop offset="100%" stopColor="#4cd7f6" />
-            </linearGradient>
-          </AreaChart>
+            <Bar dataKey="score" radius={[4, 4, 0, 0]} fill="#7c3aed" />
+          </BarChart>
         </ResponsiveContainer>
       </div>
-    </section>
+    </article>
   );
 }
-

@@ -2,14 +2,7 @@ import { BrainCircuit, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-
-const links = [
-  "Features",
-  "How It Works",
-  "AI Interview",
-  "Analytics",
-  "Pricing",
-];
+import { navbarLinks as links } from "../data/navigationData";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);

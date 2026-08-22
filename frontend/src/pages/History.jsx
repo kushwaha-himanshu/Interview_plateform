@@ -1,46 +1,16 @@
 import {
-  Bell,
   ChevronLeft,
   ChevronRight,
-  Code2,
   Download,
   Filter,
-  Moon,
   Search,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+import DashboardLayout from "../components/DashboardLayout";
+import Topbar from "../components/Topbar";
+import { allInterviews } from "../data/historyData";
 import "./History.css";
-
-const interviews = [
-  {
-    id: 1,
-    date: "20 May 2024",
-    category: "Technical",
-    duration: "45 min",
-    score: 78,
-    tone: "primary",
-    icon: Code2,
-  },
-  {
-    id: 2,
-    date: "18 May 2024",
-    category: "Behavioral",
-    duration: "30 min",
-    score: 85,
-    tone: "secondary",
-    icon: Bell,
-  },
-  {
-    id: 3,
-    date: "15 May 2024",
-    category: "System Design",
-    duration: "60 min",
-    score: 62,
-    tone: "tertiary",
-    icon: Moon,
-  },
-];
 
 function ScoreRing({ score, tone }) {
   return (
@@ -62,43 +32,75 @@ function ScoreRing({ score, tone }) {
 }
 
 export default function History() {
-  return (
-    <div className="dashboard-shell">
-      <Sidebar />
-      <main className="dashboard-main">
-        <div className="history-page">
-          <header className="history-topbar">
-            <div />
-            <div className="history-topbar-actions">
-              <button type="button" aria-label="Notifications">
-                <Bell size={18} />
-              </button>
-              <button type="button" aria-label="Search">
-                <Search size={18} />
-              </button>
-              <button type="button" aria-label="Dark mode">
-                <Moon size={18} />
-              </button>
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF1q1LLlhe9hbKkrKrNfm9HWhEHKpqLpUl3VjwMd6TuoZ31T5P2185FodE1ac6I4YRF6pWn-A0BbFkCBIp2t91t2cCRAiXI31wjkaIXPlPBhSXgADeZfmc2cxOLQ6y8TKOohvpOV67zuI0MIHa_qKEt37LCC4hOigUUKrgwd-cMejLZK_f0hEtxdTrZsmfxCjffyiCOGCL2CmlVacubGJ1vZP8m_mKOQLTp8_t2FqT3g0IO2TC20YMJA"
-                alt="User avatar"
-              />
-            </div>
-          </header>
+  const [query, setQuery] = useState("");
+  const [sortDesc, setSortDesc] = useState(true);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
 
-          <section className="history-header">
-            <div>
-              <h1>Interview History</h1>
-              <p>Review and analyze your past performance.</p>
-            </div>
+  const filteredInterviews = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    const result = allInterviews.filter(({ category, date, duration }) => {
+      if (!normalized) {
+        return true;
+      }
+      return (
+        category.toLowerCase().includes(normalized) ||
+        date.toLowerCase().includes(normalized) ||
+        duration.toLowerCase().includes(normalized)
+      );
+    });
+
+    return [...result].sort((a, b) =>
+      sortDesc ? b.score - a.score : a.score - b.score,
+    );
+  }, [query, sortDesc]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredInterviews.length / pageSize));
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  const start = (page - 1) * pageSize;
+  const pageItems = filteredInterviews.slice(start, start + pageSize);
+
+  const handleDownload = () => {
+    window.print();
+  };
+
+  return (
+    <DashboardLayout>
+      <Topbar avatarSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAF1q1LLlhe9hbKkrKrNfm9HWhEHKpqLpUl3VjwMd6TuoZ31T5P2185FodE1ac6I4YRF6pWn-A0BbFkCBIp2t91t2cCRAiXI31wjkaIXPlPBhSXgADeZfmc2cxOLQ6y8TKOohvpOV67zuI0MIHa_qKEt37LCC4hOigUUKrgwd-cMejLZK_f0hEtxdTrZsmfxCjffyiCOGCL2CmlVacubGJ1vZP8m_mKOQLTp8_t2FqT3g0IO2TC20YMJA" />
+      <div className="history-page">
+        <section className="history-header">
+          <div>
+            <h1>Interview History</h1>
+            <p>Review and analyze your past performance.</p>
+          </div>
             <div className="history-tools">
               <label>
                 <Search size={14} />
-                <input type="text" placeholder="Search history..." />
+                <input
+                  type="text"
+                  placeholder="Search history..."
+                  value={query}
+                  onChange={(event) => {
+                    setQuery(event.target.value);
+                    setPage(1);
+                  }}
+                />
               </label>
-              <button type="button">
+              <button
+                type="button"
+                onClick={() => {
+                  setSortDesc((prev) => !prev);
+                  setPage(1);
+                }}
+              >
                 <Filter size={16} />
-                Filter
+                {sortDesc ? "High Score" : "Low Score"}
               </button>
             </div>
           </section>
@@ -116,7 +118,7 @@ export default function History() {
                   </tr>
                 </thead>
                 <tbody>
-                  {interviews.map(
+                  {pageItems.map(
                     ({
                       id,
                       date,
@@ -139,7 +141,11 @@ export default function History() {
                           <ScoreRing score={score} tone={tone} />
                         </td>
                         <td className="align-right action-cell">
-                          <button type="button" title="Download PDF">
+                          <button
+                            type="button"
+                            title="Download PDF"
+                            onClick={handleDownload}
+                          >
                             <Download size={16} />
                           </button>
                           <Link to="/report" title="View Report">
@@ -153,19 +159,34 @@ export default function History() {
               </table>
             </div>
             <footer>
-              <span>Showing 1-3 of 12 reports</span>
+              <span>
+                Showing {filteredInterviews.length === 0 ? 0 : start + 1}-
+                {Math.min(start + pageSize, filteredInterviews.length)} of{" "}
+                {filteredInterviews.length} reports
+              </span>
               <div>
-                <button type="button" aria-label="Previous">
+                <button
+                  type="button"
+                  aria-label="Previous"
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  disabled={page === 1}
+                >
                   <ChevronLeft size={18} />
                 </button>
-                <button type="button" aria-label="Next">
+                <button
+                  type="button"
+                  aria-label="Next"
+                  onClick={() =>
+                    setPage((prev) => Math.min(totalPages, prev + 1))
+                  }
+                  disabled={page === totalPages}
+                >
                   <ChevronRight size={18} />
                 </button>
               </div>
             </footer>
           </section>
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   );
 }

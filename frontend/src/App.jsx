@@ -10,6 +10,8 @@ import Evaluation from "./pages/Evaluation";
 import Analytics from "./pages/Analytics";
 import Report from "./pages/Report";
 import History from "./pages/History";
+import Coach from "./pages/Coach";
+import Settings from "./pages/Settings";
 
 const PlaceholderPage = ({ title }) => (
   <main className="placeholder-page">
@@ -26,12 +28,14 @@ export default function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/resume" element={<Resume />} />
+      <Route path="/coach" element={<Coach />} />
       <Route path="/interview/setup" element={<InterviewSetup />} />
       <Route path="/interview" element={<Interview />} />
       <Route path="/evaluation" element={<Evaluation />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/history" element={<History />} />
       <Route path="/report" element={<Report />} />
+      <Route path="/settings" element={<Settings />} />
     </Routes>
   );
 }

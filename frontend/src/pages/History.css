@@ -281,6 +281,11 @@
   background: rgba(124, 58, 237, 0.12);
 }
 
+.history-table-panel footer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   .history-topbar {
     display: flex;

@@ -100,6 +100,93 @@ export default function Landing() {
             Visualize your improvement over time with detailed analytics.
           </FeatureCard>
         </section>
+
+        <section className="landing-info" id="how-it-works">
+          <h2>How It Works</h2>
+          <div className="landing-info-grid">
+            <article>
+              <b>1. Upload Resume</b>
+              <p>
+                MindFlare reads your projects, skills, and experience to build a
+                personalized interview baseline.
+              </p>
+            </article>
+            <article>
+              <b>2. Practice with AI</b>
+              <p>
+                Adaptive questions simulate real interviews across technical,
+                behavioral, and system design rounds.
+              </p>
+            </article>
+            <article>
+              <b>3. Improve Fast</b>
+              <p>
+                Get instant feedback, targeted recommendations, and measurable
+                progress after every session.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className="landing-info" id="ai-interview">
+          <h2>AI Interview</h2>
+          <div className="landing-info-grid two-col">
+            <article>
+              <b>Context-Aware Questions</b>
+              <p>
+                Questions are tuned to your resume and target role so practice
+                mirrors real interview expectations.
+              </p>
+            </article>
+            <article>
+              <b>Real-time Guidance</b>
+              <p>
+                AI coach suggestions help you structure stronger answers using
+                frameworks like STAR and PAR.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className="landing-info" id="analytics">
+          <h2>Analytics</h2>
+          <div className="landing-info-grid two-col">
+            <article>
+              <b>Performance Trends</b>
+              <p>
+                Track score changes across sessions and spot areas that need
+                focused practice.
+              </p>
+            </article>
+            <article>
+              <b>Skill Breakdown</b>
+              <p>
+                Compare technical, communication, and problem-solving metrics in
+                one dashboard.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className="landing-info" id="pricing">
+          <h2>Pricing</h2>
+          <div className="landing-info-grid two-col">
+            <article>
+              <b>Free</b>
+              <p>
+                Start with core interview practice, resume analysis, and limited
+                evaluation reports.
+              </p>
+            </article>
+            <article>
+              <b>Pro</b>
+              <p>
+                Unlock advanced analytics, deeper AI coaching, and unlimited
+                mock interview sessions.
+              </p>
+            </article>
+          </div>
+        </section>
       </main>
     </div>
   );
