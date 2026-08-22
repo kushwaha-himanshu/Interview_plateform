@@ -1,0 +1,36 @@
+import { ArrowRight, BrainCircuit, CheckCircle2, FileText, PlayCircle, Sparkles, Target, WandSparkles, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import FeatureCard from '../components/FeatureCard'
+import brainImage from '../assets/mindflare-neural-brain.png'
+
+const badges = [
+  [Sparkles, 'AI Powered', 'purple'], [FileText, 'Resume Aware', 'blue'], [Target, 'Adaptive', 'cyan'], [Zap, 'Instant Feedback', 'neutral'],
+]
+
+export default function Landing() {
+  return <div className="app-shell">
+    <Navbar />
+    <main className="landing-main">
+      <section className="hero">
+        <motion.div className="hero-copy" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .55 }}>
+          <div className="badges">{badges.map(([Icon, label, tone]) => <span className={`badge ${tone}`} key={label}><Icon size={13} />{label}</span>)}</div>
+          <h1>Your AI Interviewer.<br />Built <span>Around You.</span></h1>
+          <p>Upload your resume, practice smarter, get evaluated instantly, and improve with every interview session. Master your next tech interview with our hyper-personalized AI coach.</p>
+          <div className="hero-actions"><Link className="primary-button" to="/signup">Start Free Interview <ArrowRight size={19} /></Link><a className="secondary-button" href="#features">Explore Demo <PlayCircle size={19} /></a></div>
+        </motion.div>
+        <motion.div className="brain-stage" initial={{ opacity: 0, scale: .93 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .7, delay: .1 }}>
+          <div className="ambient-orb orb-one" /><div className="ambient-orb orb-two" />
+          <div className="neural-card"><img src={brainImage} alt="Glowing neural intelligence core" /><div className="scanline" /><div className="brain-label"><BrainCircuit size={14} /> Neural engine active</div></div>
+        </motion.div>
+      </section>
+      <section className="feature-grid" id="features">
+        <FeatureCard icon={BrainCircuit} title="Personalized Questions" tone="purple">Tailored entirely to your uploaded resume and target role.</FeatureCard>
+        <FeatureCard icon={Target} title="Adaptive Interviews" tone="blue">Difficulty adjusts in real-time based on your previous answers.</FeatureCard>
+        <FeatureCard icon={CheckCircle2} title="AI Answer Evaluation" tone="cyan">Instant, deep feedback on clarity, technical accuracy, and tone.</FeatureCard>
+        <FeatureCard icon={WandSparkles} title="Progress Tracking" tone="sky">Visualize your improvement over time with detailed analytics.</FeatureCard>
+      </section>
+    </main>
+  </div>
+}
