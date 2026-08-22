@@ -1,5 +1,72 @@
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export default function ChartCard({ data }) {
-  return <section className="dashboard-card chart-card"><div className="card-heading"><h3>Performance Overview</h3><button>Last 12 Sessions</button></div><div className="performance-chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={data} margin={{ left: -17, right: 8, top: 10 }}><defs><linearGradient id="performanceArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#7c3aed" stopOpacity=".25"/><stop offset="100%" stopColor="#4cd7f6" stopOpacity="0"/></linearGradient></defs><CartesianGrid vertical={false} stroke="#4a4455" strokeOpacity=".28"/><XAxis dataKey="session" tickLine={false} axisLine={false} tick={{ fill:'#958da1', fontSize:11 }}/><YAxis domain={[0, 100]} ticks={[0,25,50,75,100]} tickLine={false} axisLine={false} tick={{ fill:'#958da1', fontSize:11 }}/><Tooltip contentStyle={{ background:'#1c2b3c', border:'1px solid #4a4455', borderRadius:6 }} labelStyle={{ color:'#ccc3d8' }} itemStyle={{ color:'#fff' }} /><Area type="monotone" dataKey="score" stroke="url(#performanceStroke)" strokeWidth={3} fill="url(#performanceArea)" dot={{ r:3, fill:'#d2bbff', stroke:'#0d0d18', strokeWidth:2 }} activeDot={{ r:5 }} /><linearGradient id="performanceStroke" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stopColor="#732ee4"/><stop offset="100%" stopColor="#4cd7f6"/></linearGradient></AreaChart></ResponsiveContainer></div></section>
+  return (
+    <section className="dashboard-card chart-card">
+      <div className="card-heading">
+        <h3>Performance Overview</h3>
+        <button>Last 12 Sessions</button>
+      </div>
+      <div className="performance-chart">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ left: -17, right: 8, top: 10 }}>
+            <defs>
+              <linearGradient id="performanceArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#7c3aed" stopOpacity=".25" />
+                <stop offset="100%" stopColor="#4cd7f6" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              vertical={false}
+              stroke="#4a4455"
+              strokeOpacity=".28"
+            />
+            <XAxis
+              dataKey="session"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: "#958da1", fontSize: 11 }}
+            />
+            <YAxis
+              domain={[0, 100]}
+              ticks={[0, 25, 50, 75, 100]}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: "#958da1", fontSize: 11 }}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#1c2b3c",
+                border: "1px solid #4a4455",
+                borderRadius: 6,
+              }}
+              labelStyle={{ color: "#ccc3d8" }}
+              itemStyle={{ color: "#fff" }}
+            />
+            <Area
+              type="monotone"
+              dataKey="score"
+              stroke="url(#performanceStroke)"
+              strokeWidth={3}
+              fill="url(#performanceArea)"
+              dot={{ r: 3, fill: "#d2bbff", stroke: "#0d0d18", strokeWidth: 2 }}
+              activeDot={{ r: 5 }}
+            />
+            <linearGradient id="performanceStroke" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#732ee4" />
+              <stop offset="100%" stopColor="#4cd7f6" />
+            </linearGradient>
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
 }

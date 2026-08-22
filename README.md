@@ -1,5 +1,5 @@
-
 # 🧠 MINDFLARE
+
 ### AI Interviewer That Understands You
 
 ![Status](https://img.shields.io/badge/status-hackathon--build-orange)
@@ -87,20 +87,20 @@ MINDFLARE combines **RAG (Retrieval-Augmented Generation)** with an **adaptive i
 
 ## ⭐ Key Features
 
-| Feature | Status |
-|---|---|
-| Resume upload & parsing | ✅ Currently Implemented (P0) |
-| Resume-grounded question generation (RAG) | ✅ Currently Implemented (P0) |
+| Feature                                                | Status                        |
+| ------------------------------------------------------ | ----------------------------- |
+| Resume upload & parsing                                | ✅ Currently Implemented (P0) |
+| Resume-grounded question generation (RAG)              | ✅ Currently Implemented (P0) |
 | Real-time answer evaluation (score, gaps, suggestions) | ✅ Currently Implemented (P0) |
-| Adaptive follow-up question logic | ✅ Currently Implemented (P0) |
-| Interview history & session storage | 🔜 Planned (P1) |
-| Final interview report | 🔜 Planned (P1) |
-| Authentication | 🔜 Planned (P1) |
-| Analytics dashboard | 🔜 Planned (P1) |
-| Voice interview / speech-to-text | 🔮 Future Enhancement (P2) |
-| Job description matching | 🔮 Future Enhancement (P2) |
-| Live coding interview mode | 🔮 Future Enhancement (P2) |
-| Multi-language interviews | 🔮 Future Enhancement (P2) |
+| Adaptive follow-up question logic                      | ✅ Currently Implemented (P0) |
+| Interview history & session storage                    | 🔜 Planned (P1)               |
+| Final interview report                                 | 🔜 Planned (P1)               |
+| Authentication                                         | 🔜 Planned (P1)               |
+| Analytics dashboard                                    | 🔜 Planned (P1)               |
+| Voice interview / speech-to-text                       | 🔮 Future Enhancement (P2)    |
+| Job description matching                               | 🔮 Future Enhancement (P2)    |
+| Live coding interview mode                             | 🔮 Future Enhancement (P2)    |
+| Multi-language interviews                              | 🔮 Future Enhancement (P2)    |
 
 > **Note:** This table reflects the intended MVP scope for a 72-hour build. Update the checkmarks to match your actual repository state before submission — do not claim a feature is implemented until it's working end-to-end.
 
@@ -284,12 +284,12 @@ Node.js and Python communicate over plain REST/JSON — no separate message brok
 
 ## 🗄 MongoDB vs Chroma
 
-| | MongoDB | Chroma |
-|---|---|---|
-| **Stores** | Users, resume metadata, interview sessions, questions, answers, scores, feedback, history | Resume text chunks, embeddings, chunk metadata |
-| **Used for** | Application data / CRUD | Semantic similarity search (retrieval) |
-| **Owned by** | Node.js | Python |
-| **Analogy** | The system of record | The "memory" the AI searches through |
+|              | MongoDB                                                                                   | Chroma                                         |
+| ------------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **Stores**   | Users, resume metadata, interview sessions, questions, answers, scores, feedback, history | Resume text chunks, embeddings, chunk metadata |
+| **Used for** | Application data / CRUD                                                                   | Semantic similarity search (retrieval)         |
+| **Owned by** | Node.js                                                                                   | Python                                         |
+| **Analogy**  | The system of record                                                                      | The "memory" the AI searches through           |
 
 To avoid duplication, resume **raw text and embeddings** live only in Chroma; MongoDB stores a reference (`resume_id`) plus lightweight metadata (filename, upload date, candidate id) — not the full parsed content.
 
@@ -298,15 +298,18 @@ To avoid duplication, resume **raw text and embeddings** live only in Chroma; Mo
 ## 🛠 Technology Stack
 
 **Frontend**
+
 - React, Vite, Tailwind CSS, Axios, React Router
 - Recharts (if analytics/score charts are needed)
 
 **Node.js Backend**
+
 - Node.js, Express.js, MongoDB, Mongoose
 - Multer (file uploads), Axios (calls to Python)
 - JWT / bcrypt (if authentication is implemented)
 
 **Python AI Service**
+
 - Python, FastAPI
 - LangChain, `langchain-upstage`, `langchain-chroma`, `langchain-google-genai`
 - Upstage Document Parse, Upstage Embeddings
@@ -386,25 +389,25 @@ Two API layers:
 
 ### Public API (Node.js → React)
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| POST | `/api/resume/upload` | Upload and process a candidate's resume |
-| POST | `/api/interview/question` | Get the next interview question for a category |
-| POST | `/api/interview/evaluate` | Evaluate a submitted answer |
-| POST | `/api/interview/follow-up` | Get an adaptive follow-up question |
-| GET | `/api/interview/:id` | Fetch a specific interview session |
-| GET | `/api/interviews` | List all interview sessions for a user |
-| GET | `/api/health` | Health check |
+| Method | Endpoint                   | Purpose                                        |
+| ------ | -------------------------- | ---------------------------------------------- |
+| POST   | `/api/resume/upload`       | Upload and process a candidate's resume        |
+| POST   | `/api/interview/question`  | Get the next interview question for a category |
+| POST   | `/api/interview/evaluate`  | Evaluate a submitted answer                    |
+| POST   | `/api/interview/follow-up` | Get an adaptive follow-up question             |
+| GET    | `/api/interview/:id`       | Fetch a specific interview session             |
+| GET    | `/api/interviews`          | List all interview sessions for a user         |
+| GET    | `/api/health`              | Health check                                   |
 
 ### Internal API (Python → Node.js only)
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| POST | `/process-resume` | Parse, clean, chunk, embed, and store a resume |
-| POST | `/generate-question` | Retrieve context + generate a grounded question |
-| POST | `/evaluate-answer` | Score and analyze a candidate answer |
-| POST | `/follow-up` | Generate the next adaptive question |
-| GET | `/health` | Health check |
+| Method | Endpoint             | Purpose                                         |
+| ------ | -------------------- | ----------------------------------------------- |
+| POST   | `/process-resume`    | Parse, clean, chunk, embed, and store a resume  |
+| POST   | `/generate-question` | Retrieve context + generate a grounded question |
+| POST   | `/evaluate-answer`   | Score and analyze a candidate answer            |
+| POST   | `/follow-up`         | Generate the next adaptive question             |
+| GET    | `/health`            | Health check                                    |
 
 **Documentation convention for each endpoint:** Purpose · Method · URL · Request body · Response · Error response — see examples below.
 
@@ -479,18 +482,21 @@ pip install python-dotenv
 Development requires **three terminals** running simultaneously.
 
 **Terminal 1 — Frontend**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 **Terminal 2 — Node.js backend**
+
 ```bash
 cd backend/node-server
 npm run dev
 ```
 
 **Terminal 3 — Python AI service**
+
 ```bash
 cd ai-engine
 .venv\Scripts\activate
@@ -499,10 +505,10 @@ uvicorn main:app --reload --port 8000
 
 **Ports**
 
-| Service | Port |
-|---|---|
-| React (Vite) | `5173` |
-| Node.js | `5000` |
+| Service        | Port   |
+| -------------- | ------ |
+| React (Vite)   | `5173` |
+| Node.js        | `5000` |
 | Python FastAPI | `8000` |
 
 ---
@@ -514,6 +520,7 @@ uvicorn main:app --reload --port 8000
 Request: `POST /api/resume/upload` (multipart/form-data, field `resume`)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -525,11 +532,13 @@ Response:
 **Generate Question**
 
 React → Node:
+
 ```json
 { "category": "technical" }
 ```
 
 Node → Python:
+
 ```json
 {
   "resume_context": "res_8f3a1c",
@@ -538,13 +547,17 @@ Node → Python:
 ```
 
 Python response:
+
 ```json
-{ "question": "Your resume mentions a Socket.IO-based real-time bidding system in AgroVista — walk me through how you handled race conditions between simultaneous bids." }
+{
+  "question": "Your resume mentions a Socket.IO-based real-time bidding system in AgroVista — walk me through how you handled race conditions between simultaneous bids."
+}
 ```
 
 **Evaluate Answer**
 
 Request: `POST /api/interview/evaluate`
+
 ```json
 {
   "question": "Explain how you handled race conditions...",
@@ -553,17 +566,22 @@ Request: `POST /api/interview/evaluate`
 ```
 
 Response:
+
 ```json
 {
   "score": 7,
   "technical_accuracy": "Mostly correct, minor gap on isolation levels",
-  "correct_points": ["Identified need for atomic updates", "Mentioned transactions"],
+  "correct_points": [
+    "Identified need for atomic updates",
+    "Mentioned transactions"
+  ],
   "missing_points": ["Did not mention optimistic vs pessimistic locking"],
   "improvement_suggestions": "Mention which isolation level you chose and why."
 }
 ```
 
 **Error response (all endpoints)**
+
 ```json
 {
   "success": false,
@@ -606,6 +624,7 @@ flowchart TD
 ```
 
 **Rules the algorithm always follows:**
+
 - Ground every question in retrieved resume context.
 - Never invent experience the candidate doesn't have.
 - Keep follow-ups topically connected to the previous question.
@@ -615,6 +634,7 @@ flowchart TD
 ## 🗃 Database Schema
 
 **User**
+
 ```js
 {
   _id: ObjectId,
@@ -626,6 +646,7 @@ flowchart TD
 ```
 
 **Resume**
+
 ```js
 {
   _id: ObjectId,
@@ -637,6 +658,7 @@ flowchart TD
 ```
 
 **Interview (session)**
+
 ```js
 {
   _id: ObjectId,
@@ -649,6 +671,7 @@ flowchart TD
 ```
 
 **Question/Answer**
+
 ```js
 {
   _id: ObjectId,
@@ -660,6 +683,7 @@ flowchart TD
 ```
 
 **Evaluation**
+
 ```js
 {
   _id: ObjectId,
@@ -702,43 +726,45 @@ flowchart TD
 ## ⏱ 72-Hour Development Plan
 
 Roles for this plan:
+
 - **Developer 1 — Himanshu Kushwaha:** Python + RAG + Gemini
 - **Developer 2 — Nandni Gupta:** React + Node.js + MongoDB
 
-*(Swap these labels if your actual split is reversed — the hour blocks stay the same either way.)*
+_(Swap these labels if your actual split is reversed — the hour blocks stay the same either way.)_
 
-| Hours | Developer 1 (Python/RAG) | Developer 2 (React/Node/Mongo) | Deliverable |
-|---|---|---|---|
-| 0–4 | Architecture review, repo setup, env config | Architecture review, repo setup, env config | Repo scaffolded, `.env.example` in place |
-| 4–10 | Set up FastAPI skeleton, `/health` endpoint | Build React UI shell (upload page, interview page) | Basic UI + Python service running |
-| 10–18 | Resume parser (Upstage), cleaning, chunking | Node.js backend skeleton, Express routes, MongoDB models | Node API scaffolded, resume parsing working locally |
-| 18–30 | Embeddings + Chroma storage, retriever | Node ↔ MongoDB CRUD for users/interviews | Resume fully indexed into Chroma |
-| 30–38 | Node ↔ Python integration for `/process-resume` | Node ↔ Python integration (Axios service layer) | End-to-end resume upload flow works |
-| 38–46 | `/generate-question`, `/evaluate-answer` | Wire question + evaluate routes into UI | Candidate can get a question and submit an answer |
-| 46–54 | Adaptive follow-up algorithm (`/follow-up`) | Interview loop UI (question → answer → score → next) | Adaptive loop functional end-to-end |
-| 54–62 | Bug fixes on generation quality/prompting | Full frontend integration polish (loading states, errors) | Stable end-to-end demo path |
-| 62–68 | Support MongoDB history queries from AI side if needed | MongoDB interview history + basic results/report screen | Interview history visible in UI |
-| 68–70 | Joint testing of full pipeline | Joint testing of full pipeline | Bug list triaged and fixed |
-| 70–72 | Prep judge Q&A answers, architecture talking points | Deployment, demo rehearsal, slides | Demo-ready build + pitch |
+| Hours | Developer 1 (Python/RAG)                               | Developer 2 (React/Node/Mongo)                            | Deliverable                                         |
+| ----- | ------------------------------------------------------ | --------------------------------------------------------- | --------------------------------------------------- |
+| 0–4   | Architecture review, repo setup, env config            | Architecture review, repo setup, env config               | Repo scaffolded, `.env.example` in place            |
+| 4–10  | Set up FastAPI skeleton, `/health` endpoint            | Build React UI shell (upload page, interview page)        | Basic UI + Python service running                   |
+| 10–18 | Resume parser (Upstage), cleaning, chunking            | Node.js backend skeleton, Express routes, MongoDB models  | Node API scaffolded, resume parsing working locally |
+| 18–30 | Embeddings + Chroma storage, retriever                 | Node ↔ MongoDB CRUD for users/interviews                  | Resume fully indexed into Chroma                    |
+| 30–38 | Node ↔ Python integration for `/process-resume`        | Node ↔ Python integration (Axios service layer)           | End-to-end resume upload flow works                 |
+| 38–46 | `/generate-question`, `/evaluate-answer`               | Wire question + evaluate routes into UI                   | Candidate can get a question and submit an answer   |
+| 46–54 | Adaptive follow-up algorithm (`/follow-up`)            | Interview loop UI (question → answer → score → next)      | Adaptive loop functional end-to-end                 |
+| 54–62 | Bug fixes on generation quality/prompting              | Full frontend integration polish (loading states, errors) | Stable end-to-end demo path                         |
+| 62–68 | Support MongoDB history queries from AI side if needed | MongoDB interview history + basic results/report screen   | Interview history visible in UI                     |
+| 68–70 | Joint testing of full pipeline                         | Joint testing of full pipeline                            | Bug list triaged and fixed                          |
+| 70–72 | Prep judge Q&A answers, architecture talking points    | Deployment, demo rehearsal, slides                        | Demo-ready build + pitch                            |
 
 ---
 
 ## 👥 Team Task Distribution
 
-| Area | Owner |
-|---|---|
-| Resume parsing, chunking, embeddings | Himanshu Kushwaha |
-| Chroma vector store & retriever | Himanshu Kushwaha |
+| Area                                                   | Owner             |
+| ------------------------------------------------------ | ----------------- |
+| Resume parsing, chunking, embeddings                   | Himanshu Kushwaha |
+| Chroma vector store & retriever                        | Himanshu Kushwaha |
 | Gemini prompting (question gen, evaluation, follow-up) | Himanshu Kushwaha |
-| React UI (upload, interview, results) | Nandni Gupta |
-| Node.js API routes & controllers | Nandni Gupta |
-| MongoDB schema & data access | Nandni Gupta |
-| Node ↔ Python integration layer | Shared |
-| Testing & demo prep | Shared |
+| React UI (upload, interview, results)                  | Nandni Gupta      |
+| Node.js API routes & controllers                       | Nandni Gupta      |
+| MongoDB schema & data access                           | Nandni Gupta      |
+| Node ↔ Python integration layer                        | Shared            |
+| Testing & demo prep                                    | Shared            |
 
 ## 🥇 MVP Scope
 
 **P0 — Must Have**
+
 - Resume upload
 - Resume parsing
 - RAG pipeline (chunk, embed, retrieve)
@@ -751,6 +777,7 @@ Roles for this plan:
 - Python API
 
 **P1 — Should Have**
+
 - MongoDB persistence
 - Interview history
 - Final report
@@ -758,6 +785,7 @@ Roles for this plan:
 - Analytics
 
 **P2 — Nice to Have**
+
 - Voice interview / speech-to-text
 - Job description matching
 - Coding interview mode
@@ -814,17 +842,17 @@ A 3–5 minute walkthrough:
 
 ## 🧯 Troubleshooting
 
-| Issue | Cause | Solution |
-|---|---|---|
-| Missing API keys | `.env` not filled in | Copy `.env.example` to `.env` and add real keys |
-| Gemini quota / rate limit errors | Too many requests in short time | Add retry/backoff; check API quota dashboard |
-| Upstage API errors | Invalid file type or expired key | Validate file type before upload; check key validity |
-| Chroma metadata errors | Malformed metadata passed on insert | Ensure metadata values are simple types (str/int/bool) |
-| Python service unavailable | FastAPI server not running | Check Terminal 3, confirm `uvicorn` is running on port 8000 |
-| Node cannot connect to Python | Wrong `PYTHON_AI_URL` in `.env` | Verify URL/port matches running FastAPI instance |
-| CORS errors | Frontend origin not whitelisted in Node | Add `http://localhost:5173` to Node's CORS config |
-| MongoDB connection errors | Invalid `MONGODB_URI` or DB not running | Check connection string and that MongoDB is accessible |
-| PDF parsing issues | Corrupted file or unsupported format | Validate file before upload; test with a known-good PDF |
+| Issue                            | Cause                                   | Solution                                                    |
+| -------------------------------- | --------------------------------------- | ----------------------------------------------------------- |
+| Missing API keys                 | `.env` not filled in                    | Copy `.env.example` to `.env` and add real keys             |
+| Gemini quota / rate limit errors | Too many requests in short time         | Add retry/backoff; check API quota dashboard                |
+| Upstage API errors               | Invalid file type or expired key        | Validate file type before upload; check key validity        |
+| Chroma metadata errors           | Malformed metadata passed on insert     | Ensure metadata values are simple types (str/int/bool)      |
+| Python service unavailable       | FastAPI server not running              | Check Terminal 3, confirm `uvicorn` is running on port 8000 |
+| Node cannot connect to Python    | Wrong `PYTHON_AI_URL` in `.env`         | Verify URL/port matches running FastAPI instance            |
+| CORS errors                      | Frontend origin not whitelisted in Node | Add `http://localhost:5173` to Node's CORS config           |
+| MongoDB connection errors        | Invalid `MONGODB_URI` or DB not running | Check connection string and that MongoDB is accessible      |
+| PDF parsing issues               | Corrupted file or unsupported format    | Validate file before upload; test with a known-good PDF     |
 
 ## 🤝 Contribution
 
