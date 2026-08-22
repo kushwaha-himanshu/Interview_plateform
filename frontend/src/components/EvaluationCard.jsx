@@ -1,0 +1,1 @@
+export default function EvaluationCard({ label, score, tone }) { return <div className="metric"><p><span>{label}</span><b className={tone}>{score}/10</b></p><i><em className={tone} style={{ width: `${Number(score) * 10}%` }} /></i></div> }
