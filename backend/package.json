@@ -1,14 +1,14 @@
 {
-  "name": "y",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
   },
-  "type": "module",
   "author": "Himanshu Kushwaha and Nandni Gupta",
   "license": "ISC",
   "dependencies": {
