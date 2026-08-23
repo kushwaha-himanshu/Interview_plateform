@@ -6,9 +6,9 @@ from langchain_upstage import UpstageDocumentParseLoader
 from processing.text_cleaner import clean_documents
 
 
-BASE_DIR = Path(__file__).resolve().parents[1]
+# BASE_DIR = Path(__file__).resolve().parents[1]
 
-load_dotenv(BASE_DIR / ".env")
+# load_dotenv(BASE_DIR / ".env")
 
 
 def load_resume(file_path):

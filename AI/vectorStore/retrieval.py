@@ -1,13 +1,13 @@
-from vectorStore.chroma_store import retriever
+# vectorStore/retrieval.py
+
+from vectorStore.chroma_store import get_resume_context
 
 
-def get_resume_context(query):
-
-    results = retriever.invoke(query)
-
-    context = "\n\n".join(
-        doc.page_content
-        for doc in results
+def retrieve_resume_context(
+    collection_id: str,
+    query: str
+):
+    return get_resume_context(
+        collection_id=collection_id,
+        query=query
     )
-
-    return context

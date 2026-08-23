@@ -1,9 +1,15 @@
-from vectorStore.chroma_store import retriever
+# llm/question_generator.py
+
+from vectorStore.retrieval import retrieve_resume_context
 from llm.prompts import QUESTION_GENERATION_PROMPT
 from llm.gemini_client import llm
 
 
-def generate_questions(category, num_questions=5):
+def generate_questions(
+    collection_id: str,
+    category: str,
+    num_questions: int = 5
+):
 
     query = f"""
     Find resume information relevant to a {category} interview.
@@ -14,12 +20,17 @@ def generate_questions(category, num_questions=5):
     companies, certifications, or experience.
     """
 
-    results = retriever.invoke(query)
-
-    context = "\n\n".join(
-        doc.page_content
-        for doc in results
+    # Retrieve context from THIS resume's collection
+    
+    context = retrieve_resume_context(
+        collection_id=collection_id,
+        query=query
     )
+
+    if not context:
+        raise ValueError(
+            "No relevant resume context found"
+        )
 
     prompt = QUESTION_GENERATION_PROMPT.format(
         context=context,

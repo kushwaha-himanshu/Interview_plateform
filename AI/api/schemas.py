@@ -3,8 +3,9 @@ from typing import List, Dict, Any
 
 
 class StartInterviewRequest(BaseModel):
+    collection_id: str
     category: str
-    questions: List[str]
+    num_questions: int = 5
 
 
 class AnswerRequest(BaseModel):
