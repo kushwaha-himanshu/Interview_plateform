@@ -1,1 +1,51 @@
+
+
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Generated files and local data
+logs/
+outputs/
+uploads/
+tmp/
+temp/
+
+# Large AI/model files
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.bin
+*.safetensors
+models/
+
+# OS files
+.DS_Store
+Thumbs.db
