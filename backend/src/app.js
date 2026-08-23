@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import userRoutes from "./routes/user.routes.js";
+import paymentRoutes from "./routes/payment_route.js"
 const app=express();
 app.use(
     cors({
@@ -17,6 +18,7 @@ app.use(express.static("public"))
 app.use(cookieParser());
 // routes import
 app.use("/api/auth", userRoutes)
+app.use("/api/payment",paymentRoutes);
 
 
 export {app}
