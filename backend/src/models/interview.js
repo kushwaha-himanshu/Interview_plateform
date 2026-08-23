@@ -14,6 +14,10 @@ const interviewSchema = new mongoose.Schema(
       ref: "Resume",
       required: true,
     },
+      sessionId: {
+    type: String,
+    required: true,
+  },
 
     category: {
       type: String,

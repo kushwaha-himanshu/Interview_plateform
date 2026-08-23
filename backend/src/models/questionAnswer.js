@@ -30,9 +30,17 @@ const questionAnswerSchema = new mongoose.Schema(
       default: {},
     },
 
-    askedAt: {
-      type: Date,
-      default: Date.now,
+    difficulty: {
+      type: String,
+    },
+
+    coveredTopics: {
+      type: [String],
+      default: [],
+    },
+
+    questionNumber: {
+      type: Number,
     },
   },
   {

@@ -2,6 +2,8 @@ import express from "express";
 
 import {
   startInterview,
+  submitInterviewAnswer,
+  getInterviewReport
 } from "../controllers/interview.controller.js";
 
 import {
@@ -14,6 +16,16 @@ router.post(
   "/start",
   verifyJwt,
   startInterview
+);
+router.post(
+  "/:interviewId/answer",
+  verifyJwt,
+  submitInterviewAnswer
+);
+router.get(
+  "/:interviewId/report",
+  verifyJwt,
+  getInterviewReport
 );
 
 export default router;
