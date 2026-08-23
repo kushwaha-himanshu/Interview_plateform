@@ -127,3 +127,41 @@ export const uploadResume = async (req, res) => {
     });
   }
 };
+
+export const getMyResume = async (req, res) => {
+  try {
+    const resume = await Resume.findOne({
+      userId: req.user._id,
+    }).sort({
+      createdAt: -1,
+    });
+
+    if (!resume) {
+      return res.status(200).json({
+        success: true,
+        resume: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      resume: {
+        id: resume._id,
+        fileName: resume.fileName,
+        collectionId: resume.chromaCollectionId,
+        uploadedAt: resume.uploadedAt,
+      },
+    });
+
+  } catch (error) {
+    console.error(
+      "Get resume error:",
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get resume",
+    });
+  }
+};

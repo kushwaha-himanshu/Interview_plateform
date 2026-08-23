@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   uploadResume,
+  getMyResume,
 } from "../controllers/resume.controller.js";
 
 import upload from "../middlewares/uploadMiddleware.js";
@@ -20,6 +21,10 @@ router.post(
   upload.single("file"),
   uploadResume
 );
-
+router.get(
+  "/",
+  verifyJwt,
+  getMyResume
+);
 
 export default router;

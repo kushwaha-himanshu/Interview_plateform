@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useState } from "react";
+import api from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import Topbar from "../components/Topbar";
@@ -38,7 +39,56 @@ export default function InterviewSetup() {
     duration: "30 min",
   });
   const navigate = useNavigate();
+  const [starting, setStarting] = useState(false);
+const [error, setError] = useState("");
   const select = (key, value) => setSettings({ ...settings, [key]: value });
+
+  const startInterview = async () => {
+  setStarting(true);
+  setError("");
+
+  try {
+    const response = await api.post(
+      "/interview/start",
+      {
+        category,
+        difficulty: settings.difficulty,
+        style: settings.style,
+        duration: settings.duration,
+      }
+    );
+
+    console.log(
+      "Interview started:",
+      response.data
+    );
+
+    const interview =
+      response.data.interview;
+
+    // Send the interview data to Interview page
+    navigate("/interview", {
+      state: {
+        interview,
+      },
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Failed to start interview:",
+      error
+    );
+
+    setError(
+      error.response?.data?.message ||
+      "Failed to start interview. Please try again."
+    );
+
+  } finally {
+    setStarting(false);
+  }
+};
   return (
     <DashboardLayout>
       <Topbar avatarText="NG" />
@@ -96,10 +146,33 @@ export default function InterviewSetup() {
             onSelect={select}
           />
         </div>
+        {error && (
+  <p
+    style={{
+      color: "#ef4444",
+      textAlign: "center",
+      marginTop: "16px",
+    }}
+  >
+    {error}
+  </p>
+)}
         <div className="setup-action">
-          <button onClick={() => navigate("/interview")}>
-            Start AI Interview <ArrowRight size={19} />
-          </button>
+         <button
+  onClick={startInterview}
+  disabled={starting}
+>
+  {starting ? (
+    <>
+      Starting Interview...
+    </>
+  ) : (
+    <>
+      Start AI Interview
+      <ArrowRight size={19} />
+    </>
+  )}
+</button>
         </div>
       </section>
     </DashboardLayout>

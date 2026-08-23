@@ -4,6 +4,7 @@ import { useState } from "react";
 import AuthInput from "../components/AuthInput";
 import AuthLayout from "../components/AuthLayout";
 import GoogleIcon from "../components/GoogleIcon";
+import api from "../services/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,10 +19,48 @@ export default function Login() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [selectedGoogleAccount, setSelectedGoogleAccount] = useState("");
 
-  const submit = (event) => {
-    event.preventDefault();
+  const submit = async (event) => {
+
+  event.preventDefault();
+
+  try {
+
+    const formData =
+      new FormData(event.currentTarget);
+
+    const email =
+      formData.get("email");
+
+    const password =
+      formData.get("password");
+
+
+    await api.post(
+      "/auth/login",
+      {
+        email,
+        password,
+      }
+    );
+
+
     navigate("/dashboard");
-  };
+
+
+  } catch (error) {
+
+    console.error(
+      "Login failed:",
+      error
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Login failed"
+    );
+
+  }
+};
 
   const handleForgotSubmit = (e) => {
     e.preventDefault();
@@ -50,6 +89,7 @@ export default function Login() {
       </div>
       <form className="auth-form" onSubmit={submit}>
         <AuthInput
+         name="email"
           label="Email"
           icon={Mail}
           type="email"
@@ -57,6 +97,7 @@ export default function Login() {
           required
         />
         <AuthInput
+        name="password"
           label="Password"
           icon={LockKeyhole}
           type="password"
