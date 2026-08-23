@@ -1,0 +1,87 @@
+.settings-page {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 44px clamp(20px, 5vw, 64px) 64px;
+}
+
+.settings-heading h1 {
+  margin: 0;
+  font-size: 42px;
+  color: #d2bbff;
+  letter-spacing: -0.04em;
+}
+
+.settings-heading p {
+  margin: 10px 0 0;
+  color: #ccc3d8;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.settings-card {
+  padding: 24px;
+}
+
+.settings-card h2 {
+  margin: 0 0 18px;
+  font-size: 20px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.setting-row:first-of-type {
+  border-top: 0;
+}
+
+.setting-row strong {
+  display: block;
+  color: #d4e4fa;
+}
+
+.setting-row p {
+  margin: 6px 0 0;
+  color: #958da1;
+  font-size: 14px;
+}
+
+.toggle-btn {
+  min-width: 68px;
+  border: 1px solid rgba(149, 141, 161, 0.35);
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #d4e4fa;
+  background: #122131;
+  font-weight: 600;
+}
+
+.toggle-btn.on {
+  border-color: rgba(124, 58, 237, 0.6);
+  background: rgba(124, 58, 237, 0.22);
+  color: #ede0ff;
+}
+
+.toggle-btn.off {
+  color: #958da1;
+}
+
+@media (max-width: 900px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-heading h1 {
+    font-size: 34px;
+  }
+}

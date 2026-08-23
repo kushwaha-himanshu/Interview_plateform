@@ -1,0 +1,125 @@
+import {
+  ArrowLeft,
+  ArrowRight,
+  BrainCircuit,
+  BriefcaseBusiness,
+  Code2,
+  FileText,
+  GitFork,
+  Network,
+  UsersRound,
+  CheckCircle2,
+} from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import DashboardLayout from "../components/DashboardLayout";
+import Topbar from "../components/Topbar";
+import "./InterviewSetup.css";
+
+const categories = [
+  [FileText, "Resume Based", "Questions generated from your resume"],
+  [Code2, "Technical", "Core technical concepts"],
+  [GitFork, "DSA", "Data structures & Algorithms"],
+  [BriefcaseBusiness, "Projects", "In-depth project discussion"],
+  [UsersRound, "HR", "HR & Behavioral questions"],
+  [BrainCircuit, "Behavioral", "Situational & behavioral questions"],
+  [Network, "System Design", "System architecture & design"],
+];
+const choices = {
+  difficulty: ["Beginner", "Intermediate", "Advanced"],
+  style: ["Friendly", "Professional", "Technical", "Stress Mode"],
+  duration: ["15 min", "30 min", "45 min"],
+};
+export default function InterviewSetup() {
+  const [category, setCategory] = useState("Resume Based");
+  const [settings, setSettings] = useState({
+    difficulty: "Intermediate",
+    style: "Professional",
+    duration: "30 min",
+  });
+  const navigate = useNavigate();
+  const select = (key, value) => setSettings({ ...settings, [key]: value });
+  return (
+    <DashboardLayout>
+      <Topbar avatarText="NG" />
+      <section className="setup-page">
+        <header className="setup-heading">
+          <Link to="/dashboard">
+            <ArrowLeft size={18} />
+            Back
+          </Link>
+          <h1>Start Interview</h1>
+          <p>Choose your interview type and preferences</p>
+        </header>
+        <section>
+          <h2>Interview Category</h2>
+          <div className="category-grid">
+            {categories.map(([Icon, title, description]) => (
+              <button
+                key={title}
+                className={`category-card ${category === title ? "selected" : ""}`}
+                onClick={() => setCategory(title)}
+              >
+                {category === title && (
+                  <CheckCircle2 className="selected-icon" size={19} />
+                )}
+                <span>
+                  <Icon size={21} />
+                </span>
+                <b>{title}</b>
+                <p>{description}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+        <div className="setup-settings">
+          <OptionGroup
+            title="Difficulty Level"
+            setting="difficulty"
+            values={choices.difficulty}
+            value={settings.difficulty}
+            onSelect={select}
+          />
+          <OptionGroup
+            title="Interviewer Style"
+            setting="style"
+            values={choices.style}
+            value={settings.style}
+            onSelect={select}
+          />
+          <OptionGroup
+            wide
+            title="Duration"
+            setting="duration"
+            values={choices.duration}
+            value={settings.duration}
+            onSelect={select}
+          />
+        </div>
+        <div className="setup-action">
+          <button onClick={() => navigate("/interview")}>
+            Start AI Interview <ArrowRight size={19} />
+          </button>
+        </div>
+      </section>
+    </DashboardLayout>
+  );
+}
+function OptionGroup({ title, setting, values, value, onSelect, wide }) {
+  return (
+    <section className={`option-group dashboard-card ${wide ? "wide" : ""}`}>
+      <h3>{title}</h3>
+      <div>
+        {values.map((option) => (
+          <button
+            key={option}
+            className={value === option ? "selected" : ""}
+            onClick={() => onSelect(setting, option)}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
