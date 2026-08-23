@@ -19,3 +19,6 @@ class InterviewResponse(BaseModel):
     score: int | None = None
     evaluation: Dict[str, Any] | None = None
     difficulty: str | None = None
+class AnswerRequest(BaseModel):
+    session_id: str
+    answer: str

@@ -4,7 +4,7 @@ from fastapi import (
     File,
     HTTPException
 )
-
+from api.schemas import AnswerRequest
 import os
 import uuid
 
@@ -177,4 +177,41 @@ def start_interview(
         raise HTTPException(
             status_code=500,
             detail="Failed to start interview"
+        )
+
+@router.post("/answer")
+def answer_interview(
+    request: AnswerRequest
+):
+
+    try:
+
+        result = submit_answer(
+            session_id=request.session_id,
+            answer=request.answer,
+            llm=llm         
+        )
+
+        return {
+            "success": True,
+            **result
+        }
+
+    except KeyError:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Interview session not found"
+        )
+
+    except Exception as e:
+
+        print(
+            "Answer evaluation error:",
+            e
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to evaluate answer"
         )
