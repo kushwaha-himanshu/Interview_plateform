@@ -646,3 +646,411 @@ export const getInterviewHistory = async (req, res) => {
 
   }
 };
+
+
+export const getAnalytics = async (req, res) => {
+  try {
+
+    // Only completed interviews
+    const interviews = await Interview.find({
+      userId: req.user._id,
+      status: "completed",
+    })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    if (!interviews.length) {
+      return res.status(200).json({
+        success: true,
+        analytics: {
+          overview: {
+            overallScore: 0,
+            totalSessions: 0,
+            averageImprovement: 0,
+          },
+          skills: [],
+          trend: [],
+          recentInterviews: [],
+        },
+      });
+    }
+
+    const interviewIds = interviews.map(
+      (item) => item._id
+    );
+
+    // Get all answers belonging to these interviews
+    const answers = await QuestionAnswer.find({
+      interviewId: {
+        $in: interviewIds,
+      },
+    })
+      .sort({
+        questionNumber: 1,
+      })
+      .lean();
+
+
+    // --------------------------------
+    // Calculate score for each interview
+    // --------------------------------
+
+    const interviewStats = interviews.map(
+      (interview) => {
+
+        const interviewAnswers =
+          answers.filter(
+            (answer) =>
+              answer.interviewId.toString() ===
+              interview._id.toString()
+          );
+
+        const totalScore =
+          interviewAnswers.reduce(
+            (sum, answer) =>
+              sum + Number(answer.score || 0),
+            0
+          );
+
+        const score =
+          interviewAnswers.length
+            ? Number(
+                (
+                  totalScore /
+                  interviewAnswers.length
+                ).toFixed(1)
+              )
+            : 0;
+
+        return {
+          ...interview,
+          score,
+          questions:
+            interviewAnswers.length,
+        };
+      }
+    );
+
+
+    // --------------------------------
+    // Overall statistics
+    // --------------------------------
+
+    const scores =
+      interviewStats.map(
+        (item) => item.score
+      );
+
+    const totalScore =
+      scores.reduce(
+        (sum, score) =>
+          sum + score,
+        0
+      );
+
+    const overallScore =
+      scores.length
+        ? Number(
+            (
+              totalScore /
+              scores.length
+            ).toFixed(1)
+          )
+        : 0;
+
+
+    const bestScore =
+      Math.max(...scores);
+
+
+    // --------------------------------
+    // Improvement
+    // --------------------------------
+
+    let averageImprovement = 0;
+
+    if (scores.length >= 2) {
+
+      const recent =
+        scores.slice(-7);
+
+      const first =
+        recent[0];
+
+      const last =
+        recent[recent.length - 1];
+
+      averageImprovement =
+        Number(
+          (
+            last - first
+          ).toFixed(1)
+        );
+
+    }
+
+
+    // --------------------------------
+    // Score trend
+    // --------------------------------
+
+    const trend =
+  interviewStats.map(
+    (item, index) => ({
+
+      session:
+        `Interview ${index + 1}`,
+
+      score:
+        Math.round(
+          item.score * 10
+        ),
+
+    })
+  );
+
+
+    // --------------------------------
+    // Category performance
+    // --------------------------------
+// --------------------------------
+// Skill / Topic Performance
+// --------------------------------
+
+const normalizeTopic = (topic) => {
+
+  const value =
+    topic.trim().toLowerCase();
+
+  const aliases = {
+
+    "js": "JavaScript",
+
+    "javascript": "JavaScript",
+
+    "reactjs": "React",
+
+    "react.js": "React",
+
+    "mongodb": "MongoDB",
+
+    "mongo db": "MongoDB",
+
+    "dsa": "DSA",
+
+    "data structures": "DSA",
+
+    "dbms": "DBMS",
+
+    "database management system":
+      "DBMS",
+
+  };
+
+  return (
+    aliases[value] ||
+    topic.trim()
+  );
+
+};
+
+
+const topicMap = {};
+
+
+answers.forEach((answer) => {
+
+  const score =
+    Number(answer.score || 0);
+
+  const topics =
+    answer.coveredTopics || [];
+
+
+  topics.forEach((topic) => {
+
+    const normalizedTopic =
+      normalizeTopic(topic);
+
+    if (!normalizedTopic) {
+      return;
+    }
+
+
+    if (!topicMap[normalizedTopic]) {
+
+      topicMap[normalizedTopic] = {
+
+        totalScore: 0,
+
+        questionCount: 0,
+
+      };
+
+    }
+
+
+    topicMap[normalizedTopic]
+      .totalScore += score;
+
+
+    topicMap[normalizedTopic]
+      .questionCount++;
+
+  });
+
+});
+
+
+const skills =
+  Object.entries(topicMap)
+
+    .map(([topic, data]) => {
+
+      const averageScore =
+        data.totalScore /
+        data.questionCount;
+
+
+      return {
+
+        skill: topic,
+
+        value: Math.round(
+          averageScore * 10
+        ),
+
+      };
+
+    })
+
+    .sort(
+      (a, b) =>
+        b.value - a.value
+    )
+
+    .slice(0, 6);
+    // --------------------------------
+    // Recent interviews
+    // --------------------------------
+
+    const recentInterviews =
+      [...interviewStats]
+        .reverse()
+        .slice(0, 5)
+        .map(
+          (interview, index, array) => {
+
+            const current =
+              interview.score;
+
+            const previous =
+              array[index + 1]?.score;
+
+            let improvement = "-";
+
+            if (
+              previous !== undefined
+            ) {
+
+              const difference =
+                current -
+                previous;
+
+              improvement =
+                `${difference >= 0 ? "+" : ""}${Math.round(
+                  difference * 10
+                )}%`;
+
+            }
+
+            return {
+
+              id:
+                interview._id,
+
+              date:
+                new Date(
+                  interview.createdAt
+                ).toLocaleDateString(
+                  "en-IN",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                ),
+
+              category:
+                interview.category,
+
+              score:
+                `${Math.round(
+                  current * 10
+                )}%`,
+
+              duration:
+                `${interview.questions} Questions`,
+
+              improvement,
+
+              tone:
+                "default",
+
+            };
+
+          }
+        );
+
+
+    return res.status(200).json({
+
+      success: true,
+
+      analytics: {
+
+        overview: {
+
+          overallScore,
+
+          bestScore,
+
+          totalSessions:
+            interviews.length,
+
+          totalQuestions:
+            answers.length,
+
+          averageImprovement,
+
+        },
+
+        skills,
+
+        trend,
+
+        recentInterviews,
+
+      },
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Analytics error:",
+      error.message
+    );
+
+    return res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to generate analytics",
+
+    });
+
+  }
+};

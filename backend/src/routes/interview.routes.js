@@ -4,7 +4,8 @@ import {
   startInterview,
   submitInterviewAnswer,
   getInterviewReport,
-  getInterviewHistory
+  getInterviewHistory,
+  getAnalytics
 } from "../controllers/interview.controller.js";
 
 import {
@@ -33,6 +34,11 @@ router.get(
   "/history",
   verifyJwt,
   getInterviewHistory
+);
+router.get(
+  "/analytics",
+  verifyJwt,
+  getAnalytics
 );
 
 export default router;
