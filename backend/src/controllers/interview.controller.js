@@ -155,9 +155,11 @@ export const submitInterviewAnswer = async (
 
   try {
 
-    const { interviewId } = req.params;
+    const { interviewId } =
+      req.params;
 
-    const { answer } = req.body;
+    const { answer } =
+      req.body;
 
 
     // -----------------------------
@@ -219,11 +221,12 @@ export const submitInterviewAnswer = async (
       );
 
 
-    const result = aiResponse.data;
+    const result =
+      aiResponse.data;
 
 
     // -----------------------------
-    // 5. Save Q&A in MongoDB
+    // 5. Save Q&A
     // -----------------------------
 
     await QuestionAnswer.create({
@@ -256,7 +259,7 @@ export const submitInterviewAnswer = async (
 
 
     // -----------------------------
-    // 6. Update interview
+    // 6. Update current question
     // -----------------------------
 
     interview.currentQuestion =
@@ -265,19 +268,63 @@ export const submitInterviewAnswer = async (
         : result.question;
 
 
+    // -----------------------------
+    // 7. Interview completed
+    // -----------------------------
+
     if (result.completed) {
 
+      // Get all answers
+      const answers =
+        await QuestionAnswer.find({
+          interviewId:
+            interview._id,
+        });
+
+
+      // Calculate total score
+      const totalScore =
+        answers.reduce(
+          (sum, item) =>
+            sum + (item.score || 0),
+          0
+        );
+
+
+      // Calculate average
+      const overallScore =
+        answers.length > 0
+          ? Number(
+              (
+                totalScore /
+                answers.length
+              ).toFixed(1)
+            )
+          : 0;
+
+
+      // Save final interview data
       interview.status =
         "completed";
 
+      interview.overallScore =
+        overallScore;
+
+      interview.questionsAnswered =
+        answers.length;
+
     }
 
+
+    // -----------------------------
+    // 8. Save interview
+    // -----------------------------
 
     await interview.save();
 
 
     // -----------------------------
-    // 7. Return to frontend
+    // 9. Return response
     // -----------------------------
 
     return res.status(200).json({
@@ -309,6 +356,7 @@ export const submitInterviewAnswer = async (
 
     });
 
+
   } catch (error) {
 
     console.error(
@@ -316,6 +364,7 @@ export const submitInterviewAnswer = async (
       error.response?.data ||
       error.message
     );
+
 
     return res.status(500).json({
 
@@ -494,3 +543,50 @@ export const getInterviewReport = async (req, res) => {
   }
 };
 
+export const getInterviewHistory = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const interviews =
+      await Interview.find({
+        userId: req.user._id,
+      })
+      .sort({
+        createdAt: -1,
+      })
+      .select(
+        "category status overallScore questionsAnswered createdAt"
+      );
+
+
+    return res.status(200).json({
+
+      success: true,
+
+      interviews,
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Get interview history error:",
+      error.message
+    );
+
+
+    return res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to fetch interview history",
+
+    });
+
+  }
+};

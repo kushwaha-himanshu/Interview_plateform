@@ -3,7 +3,8 @@ import express from "express";
 import {
   startInterview,
   submitInterviewAnswer,
-  getInterviewReport
+  getInterviewReport,
+  getInterviewHistory
 } from "../controllers/interview.controller.js";
 
 import {
@@ -26,6 +27,12 @@ router.get(
   "/:interviewId/report",
   verifyJwt,
   getInterviewReport
+);
+
+router.get(
+  "/history",
+  verifyJwt,
+  getInterviewHistory
 );
 
 export default router;
