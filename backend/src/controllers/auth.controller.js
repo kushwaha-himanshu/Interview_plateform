@@ -1,6 +1,10 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+import {
+  adminAuth,
+} from "../config/firebase_admin.js";
 // import sendEmail from "../services/email.services.js";
 //  import Otp from "../models/otp.model.js";
 //  import transporter from "../services/email.services.js";
@@ -237,33 +241,108 @@ return res.status(200).json({
   }
 }
 
-export const googleAuth=async(req,res)=>{
-  try{
-     const {fullname,email}=req.body;
-     let user=await User.findOne({email:email});
-     if(!user){
-      user=await User.create({fullname,email,authProvider:"google"});
-     }
-      const {accessToken,refreshToken}=await generateAccessAndRefreshToken(user._id);
-      res.cookie("accessToken",accessToken,{httpOnly:true,secure:false,sameSite:"lax"});
-      res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:false,sameSite:"lax"});
-      return res.status(200).json({
-        message:"Google Authentication successful",
-        user:{
-          id:user._id,
-          fullname:user.fullname,
-          authProvider:user.authProvider,
-          email:user.email,
-          accessToken,
-          refreshToken
-        }
+export const googleAuth = async (req, res) => {
+  try {
+
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Firebase ID token is required",
+      });
+    }
+
+    // Verify Firebase token here
+    const decodedToken =
+      await adminAuth.verifyIdToken(
+        idToken);
+
+    const {
+      uid,
+      email,
+      name,
+      picture,
+    } = decodedToken;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Google email not available",
+      });
+    }
+
+    let user = await User.findOne({
+      email,
+    });
+
+    if (!user) {
+
+      user = await User.create({
+        fullname: name || "Google User",
+        email,
+        googleId: uid,
+        authProvider: "google",
+        avatar: picture,
       });
 
-  }catch(err){
-    console.error("Google Authentication error:",err);
-    return res.status(500).json({message:"Server error during Google Authentication"});
+    }
+
+    const {
+      accessToken,
+      refreshToken,
+    } = await generateAccessAndRefreshToken(
+      user._id
+    );
+
+    res
+      .cookie(
+        "accessToken",
+        accessToken,
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        }
+      )
+      .cookie(
+        "refreshToken",
+        refreshToken,
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        }
+      );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Google Authentication successful",
+
+      user: {
+        id: user._id,
+        fullname: user.fullname,
+        authProvider:
+          user.authProvider,
+        email: user.email,
+      },
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Google Authentication error:",
+      err
+    );
+
+    return res.status(401).json({
+      success: false,
+      message:
+        "Invalid Google authentication",
+    });
   }
-}
+};
  
 export const logout=async(req,res)=>{
   try{
