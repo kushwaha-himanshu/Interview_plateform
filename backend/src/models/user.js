@@ -27,6 +27,12 @@ authProvider: {
   enum: ["local", "google"],
   default: "local"
 },
+subscription: {
+  plan: { type: String, default: "free" },
+  status: { type: String, default: "active" },
+  startDate: { type: Date, default: null },
+  endDate: { type: Date, default: null }
+},
   refreshToken: {
     type: String,
   }

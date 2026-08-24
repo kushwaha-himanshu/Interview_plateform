@@ -24,10 +24,24 @@ export const createPaymentOrder = async (req, res) => {
 
     }
     const order = await razorpay.orders.create(options);
-    return res.status(200).json(order);
-    } catch (error) {
-        console.error("Error creating payment order:", error);
-        return res.status(500).json({ success: false, message: "Failed to create payment order" });
+    return res.status(200).json({
+      id: order.id,
+      entity: order.entity,
+      amount: order.amount,
+      amount_paid: order.amount_paid,
+      amount_due: order.amount_due,
+      currency: order.currency,
+      receipt: order.receipt,
+      offer_id: order.offer_id,
+      status: order.status,
+      attempts: order.attempts,
+      notes: order.notes,
+      created_at: order.created_at,
+      keyId: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.error("Error creating payment order:", error);
+    return res.status(500).json({ success: false, message: "Failed to create payment order" });
   } 
 }
 
@@ -95,13 +109,19 @@ console.log("Amount:", amount);
         });
 
         if (req.user?._id) {
-            console.log("Updating user:", req.user._id);
-            await User.findByIdAndUpdate(req.user ,{
+            console.log("Updating user subscription:", req.user._id);
+            await User.findByIdAndUpdate(req.user._id, {
                 premium: true,
                 premiumPlan: "Pro",
                 premiumExpiry: new Date(
-                    Date.now() + 365 * 24 * 60 * 60 * 1000
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
                 ),
+                subscription: {
+                    plan: "pro",
+                    status: "active",
+                    startDate: new Date(),
+                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                }
             });
         }
 

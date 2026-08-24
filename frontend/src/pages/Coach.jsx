@@ -17,6 +17,7 @@ import NotificationsBell from "../components/NotificationsBell";
 import api from "../services/api";
 import "./Coach.css";
 import React from "react";
+import { useSubscription } from "../context/SubscriptionContext";
 
 class SafeMarkdown extends React.Component {
   constructor(props) {
@@ -106,6 +107,7 @@ const quickActionsList = [
 ];
 
 export default function Coach() {
+  const { isPro, loading: subLoading, plan, status } = useSubscription();
   const [messages, setMessages] = useState([
     {
       type: "ai",
@@ -140,8 +142,88 @@ export default function Coach() {
         console.error("Failed to load coach context:", err);
       }
     };
-    fetchContext();
-  }, []);
+    if (isPro) {
+      fetchContext();
+    }
+  }, [isPro]);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleUpgrade = async () => {
+    setLoading(true);
+    try {
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay SDK. Please check your internet connection.");
+        setLoading(false);
+        return;
+      }
+
+      // Create payment order
+      const amountValue = Number(import.meta.env.VITE_PRO_PLAN_AMOUNT || 499);
+      const orderRes = await api.post("/payment/create-order", {
+        amount: amountValue,
+        currency: "INR"
+      });
+
+      const orderData = orderRes.data;
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "MindFlare AI",
+        description: "Pro Monthly Subscription Plan",
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            setLoading(true);
+            const verifyRes = await api.post("/payment/verify-payment", {
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+              amount: amountValue,
+              currency: orderData.currency || "INR"
+            });
+
+            if (verifyRes.data?.success) {
+              window.dispatchEvent(new Event("mindflare-pro-change"));
+            } else {
+              alert("Payment verification failed.");
+            }
+          } catch (verifyErr) {
+            console.error("Verification failed:", verifyErr);
+            alert("An error occurred during verification. Please try again.");
+          } finally {
+            setLoading(false);
+          }
+        },
+        theme: {
+          color: "#7c3aed"
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Payment order creation failed:", err);
+      alert("Failed to initiate upgrade order. Please try again later.");
+      setLoading(false);
+    }
+  };
 
   const sendMessage = async (customContent = null) => {
     const content = (customContent || draft).trim();
@@ -351,6 +433,131 @@ export default function Coach() {
     );
   };
 
+  if (subLoading) {
+    return (
+      <DashboardLayout className="coach-page">
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "calc(100vh - 64px)", color: "#ccc3d8" }}>
+          <div className="listening-visualizer" style={{ marginRight: "8px" }}>
+            <span />
+            <span />
+            <span />
+          </div>
+          <span>Loading subscription status...</span>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!isPro) {
+    const isExpired = plan === "pro" && status === "expired";
+    return (
+      <DashboardLayout className="coach-page">
+        <header className="coach-topbar" style={{ borderBottom: "1px solid rgba(74, 68, 85, 0.2)" }}>
+          <div className="coach-brand-mobile">
+            <Menu size={18} />
+            <span>MindFlare</span>
+          </div>
+          <div className="coach-top-actions">
+            <NotificationsBell size={18} />
+            <button type="button" aria-label="Help">
+              <HelpCircle size={18} />
+            </button>
+          </div>
+        </header>
+
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "calc(100vh - 120px)",
+          padding: "40px 20px",
+          textAlign: "center",
+          maxWidth: "600px",
+          margin: "0 auto"
+        }}>
+          <div style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            background: "rgba(124, 58, 237, 0.1)",
+            border: "1px solid rgba(124, 58, 237, 0.2)",
+            display: "grid",
+            placeItems: "center",
+            color: "#d2bbff",
+            fontSize: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 0 20px rgba(124, 58, 237, 0.15)"
+          }}>
+            🔒
+          </div>
+
+          <h2 style={{ color: "#fff", fontSize: "28px", fontWeight: "700", margin: "0 0 12px" }}>
+            {isExpired ? "Your Pro subscription has expired" : "AI Coach is a Pro Feature"}
+          </h2>
+          
+          <p style={{ color: "#ccc3d8", fontSize: "15px", lineHeight: "1.6", margin: "0 0 32px", maxWidth: "480px" }}>
+            Unlock personalized 1-on-1 coaching based on your resume, completed mock interviews, weak areas, and dynamic performance trends.
+          </p>
+
+          <div style={{
+            background: "rgba(28, 43, 60, 0.3)",
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+            borderRadius: "12px",
+            padding: "24px",
+            width: "100%",
+            textAlign: "left",
+            marginBottom: "32px"
+          }}>
+            <h3 style={{ color: "#fff", fontSize: "14px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 16px" }}>
+              Features Included in Pro:
+            </h3>
+            <ul style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", listStyle: "none", padding: 0, margin: 0 }}>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Personalized Interview Guidance
+              </li>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Performance & Weakness Analysis
+              </li>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Personalized Study Roadmaps
+              </li>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Interactive DSA/DBMS Mock Drills
+              </li>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Resume Enhancement Advice
+              </li>
+              <li style={{ color: "#ccc3d8", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ color: "#10b981" }}>✓</span> Unlimited AI Coaching Chats
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleUpgrade}
+            disabled={loading}
+            style={{
+              background: "#7c3aed",
+              border: "none",
+              borderRadius: "8px",
+              padding: "14px 28px",
+              color: "#fff",
+              fontSize: "15px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "background 0.2s",
+              boxShadow: "0 4px 15px rgba(124, 58, 237, 0.3)"
+            }}
+          >
+            {loading ? "Processing Order..." : isExpired ? "Renew Pro Plan" : "Upgrade to Pro"}
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout className="coach-page">
       <header className="coach-topbar">
@@ -399,9 +606,9 @@ export default function Coach() {
               <span>Nexus AI Connected</span>
             </div>
             
-            <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "rgba(124, 58, 237, 0.1)", border: "1px solid rgba(124, 58, 237, 0.2)", borderRadius: "12px", padding: "4px 8px", fontSize: "11px", color: "#d2bbff" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "rgba(124, 58, 237, 0.15)", border: "1px solid rgba(124, 58, 237, 0.3)", borderRadius: "12px", padding: "4px 8px", fontSize: "11px", color: "#d2bbff", fontWeight: "600" }}>
               <Sparkles size={12} />
-              <span>Personalized for you</span>
+              <span>PRO ✦</span>
             </div>
           </div>
 

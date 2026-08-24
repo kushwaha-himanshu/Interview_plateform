@@ -15,26 +15,91 @@ import {
 
 import api from "../services/api";
 
-const PRO_KEY = "mindflare-pro";
+import { useSubscription } from "../context/SubscriptionContext";
 
 export default function Sidebar() {
-  const [isPro, setIsPro] = useState(() => {
-    return localStorage.getItem(PRO_KEY) === "true";
-  });
+  const { isPro, loading: subLoading } = useSubscription();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleUpgrade = () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleUpgrade = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert("Failed to load Razorpay SDK. Please check your internet connection.");
+        setLoading(false);
+        return;
+      }
+
+      // Create payment order
+      const amountValue = Number(import.meta.env.VITE_PRO_PLAN_AMOUNT || 499);
+      const orderRes = await api.post("/payment/create-order", {
+        amount: amountValue,
+        currency: "INR"
+      });
+
+      const orderData = orderRes.data;
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "MindFlare AI",
+        description: "Pro Monthly Subscription Plan",
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            setLoading(true);
+            const verifyRes = await api.post("/payment/verify-payment", {
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+              amount: amountValue,
+              currency: orderData.currency || "INR"
+            });
+
+            if (verifyRes.data?.success) {
+              setSuccess(true);
+              window.dispatchEvent(new Event("mindflare-pro-change"));
+            } else {
+              alert("Payment verification failed.");
+            }
+          } catch (verifyErr) {
+            console.error("Verification failed:", verifyErr);
+            alert("An error occurred during verification. Please try again.");
+          } finally {
+            setLoading(false);
+          }
+        },
+        theme: {
+          color: "#7c3aed"
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Payment order creation failed:", err);
+      alert("Failed to initiate upgrade order. Please try again later.");
       setLoading(false);
-      setSuccess(true);
-      setIsPro(true);
-      localStorage.setItem(PRO_KEY, "true");
-      // Dispatch custom event to notify other parts of the app
-      window.dispatchEvent(new Event("mindflare-pro-change"));
-    }, 1500);
+    }
   };
 
   const navigate = useNavigate();

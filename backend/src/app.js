@@ -7,6 +7,7 @@ import resumeRoutes from "./routes/resume.routes.js";
 import interviewRoutes
   from "./routes/interview.routes.js";
 import coachRoutes from "./routes/coach.routes.js";
+import subscriptionRoutes from "./routes/subscription.routes.js";
 const app=express();
 app.use(
     cors({
@@ -29,4 +30,5 @@ app.use(
   interviewRoutes
 );
 app.use("/api/coach", coachRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 export {app}
