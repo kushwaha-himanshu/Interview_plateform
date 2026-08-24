@@ -8,7 +8,7 @@ from interview.final_report import generate_final_report
 sessions = {}
 
 
-def create_session(category, questions, context, difficulty="Intermediate", interviewer_style="Professional", duration="30 min", total_questions=5):
+def create_session(category, questions, context, difficulty="Intermediate", interviewer_style="Professional", duration="30 min", total_questions=5, resume_id=None, collection_id=None):
 
     session_id = str(uuid.uuid4())
 
@@ -33,7 +33,9 @@ def create_session(category, questions, context, difficulty="Intermediate", inte
         "difficulty": difficulty,
         "interviewer_style": interviewer_style,
         "duration": duration,
-        "total_questions": total_questions
+        "total_questions": total_questions,
+        "resume_id": resume_id,
+        "collection_id": collection_id
     }
 
     sessions[session_id] = state

@@ -69,12 +69,13 @@ export const uploadResume = async (req, res) => {
 
 
     // --------------------------------
-    // 5. Get Chroma collection ID
+    // 5. Get Chroma collection ID and analysis
     // --------------------------------
 
     const {
       collection_id,
       chunk_count,
+      analysis,
     } = aiResponse.data;
 
 
@@ -94,6 +95,7 @@ export const uploadResume = async (req, res) => {
       userId: req.user._id,
       fileName: req.file.originalname,
       chromaCollectionId: collection_id,
+      analysis: analysis,
     });
 
 
@@ -111,6 +113,7 @@ export const uploadResume = async (req, res) => {
         fileName: resume.fileName,
         collectionId: resume.chromaCollectionId,
         chunkCount: chunk_count,
+        analysis: resume.analysis,
       },
     });
 
@@ -130,38 +133,76 @@ export const uploadResume = async (req, res) => {
 
 export const getMyResume = async (req, res) => {
   try {
-    const resume = await Resume.findOne({
+    const resumes = await Resume.find({
       userId: req.user._id,
     }).sort({
       createdAt: -1,
     });
 
-    if (!resume) {
-      return res.status(200).json({
-        success: true,
-        resume: null,
-      });
-    }
-
     return res.status(200).json({
       success: true,
-      resume: {
-        id: resume._id,
-        fileName: resume.fileName,
-        collectionId: resume.chromaCollectionId,
-        uploadedAt: resume.uploadedAt,
-      },
+      resumes: resumes.map(r => ({
+        id: r._id,
+        fileName: r.fileName,
+        collectionId: r.chromaCollectionId,
+        uploadedAt: r.uploadedAt,
+        analysis: r.analysis,
+      })),
+      resume: resumes.length > 0 ? {
+        id: resumes[0]._id,
+        fileName: resumes[0].fileName,
+        collectionId: resumes[0].chromaCollectionId,
+        uploadedAt: resumes[0].uploadedAt,
+        analysis: resumes[0].analysis,
+      } : null,
     });
 
   } catch (error) {
     console.error(
-      "Get resume error:",
+      "Get resumes error:",
       error.message
     );
 
     return res.status(500).json({
       success: false,
-      message: "Failed to get resume",
+      message: "Failed to get resumes",
+    });
+  }
+};
+
+export const deleteResume = async (req, res) => {
+  try {
+    const { resumeId } = req.params;
+
+    // Verify ownership
+    const resume = await Resume.findOne({
+      _id: resumeId,
+      userId: req.user._id,
+    });
+
+    if (!resume) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume not found",
+      });
+    }
+
+    await Resume.deleteOne({
+      _id: resumeId,
+      userId: req.user._id,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Resume deleted successfully",
+      resumeId: resumeId,
+    });
+
+  } catch (error) {
+    console.error("Delete resume error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete resume",
     });
   }
 };

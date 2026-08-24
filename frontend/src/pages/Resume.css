@@ -160,12 +160,17 @@
   width: 100%;
   margin-top: 11px;
   padding: 11px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
   color: #ccc3d8;
   background: rgba(28, 43, 60, 0.45);
   text-align: left;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+.analysis-stat.selected-stat {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
 }
 .analysis-stat:hover {
   background: #1c2b3c;

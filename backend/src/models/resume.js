@@ -24,6 +24,11 @@ const resumeSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    analysis: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
   },
   {
     timestamps: true,

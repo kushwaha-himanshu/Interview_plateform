@@ -12,7 +12,7 @@ import { useRef, useState,useEffect } from "react";
 import api from "../services/api";
 
 
-export default function ResumeUploader() {
+export default function ResumeUploader({ onUploadSuccess, activeResume }) {
 
   const inputRef = useRef(null);
 
@@ -27,28 +27,16 @@ export default function ResumeUploader() {
 
   const [error, setError] =
     useState("");
-useEffect(() => {
-  const fetchResume = async () => {
-    try {
-      const response = await api.get("/resume");
 
-      const resume = response.data.resume;
-
-      if (resume) {
-        setFileName(resume.fileName);
-        setUploaded(true);
-      }
-
-    } catch (error) {
-      console.error(
-        "Failed to load resume:",
-        error
-      );
+  useEffect(() => {
+    if (activeResume) {
+      setFileName(activeResume.fileName);
+      setUploaded(true);
+    } else {
+      setFileName("");
+      setUploaded(false);
     }
-  };
-
-  fetchResume();
-}, []);
+  }, [activeResume]);
 
   const uploadFile = async (file) => {
 
@@ -121,8 +109,12 @@ useEffect(() => {
         response.data
       );
 
-console.log("SETTING UPLOADED TRUE");
+      console.log("SETTING UPLOADED TRUE");
       setUploaded(true);
+
+      if (onUploadSuccess) {
+        onUploadSuccess(response.data.resume);
+      }
 
 
     } catch (error) {

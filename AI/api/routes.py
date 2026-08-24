@@ -73,7 +73,8 @@ async def process_resume_endpoint(
             "success": True,
             "file_name": file.filename,
             "collection_id": result["collection_id"],
-            "chunk_count": result["chunk_count"]
+            "chunk_count": result["chunk_count"],
+            "analysis": result.get("analysis")
         }
 
     except Exception as e:
@@ -101,6 +102,8 @@ class StartInterviewRequest(BaseModel):
     interviewer_style: str = "Professional"
     duration: str = "30 min"
     total_questions: int = 5
+    resume_id: str = None
+    session_id: str = None
 
 
 @router.post("/start")
@@ -167,7 +170,9 @@ def start_interview(
             difficulty=request.difficulty,
             interviewer_style=request.interviewer_style,
             duration=request.duration,
-            total_questions=total_qs
+            total_questions=total_qs,
+            resume_id=request.resume_id,
+            collection_id=request.collection_id
         )
 
         return {

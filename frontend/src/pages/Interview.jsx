@@ -559,6 +559,30 @@ const stopSpeaking = () => {
 
           </div>
 
+          <div className="progress-detail">
+            <span>Resume</span>
+            <b style={{ color: "#d2bbff" }}>{interview.resumeFileName || "Standard Resume"}</b>
+          </div>
+
+          <div className="progress-detail">
+            <span>Category</span>
+            <b>{interview.category || "Resume Based"}</b>
+          </div>
+
+          <div className="progress-detail">
+            <span>Difficulty</span>
+            <b>{interview.difficulty || "Intermediate"}</b>
+          </div>
+
+          <div className="progress-detail">
+            <span>Style</span>
+            <b>{interview.interviewerStyle || "Professional"}</b>
+          </div>
+
+          <div className="progress-detail">
+            <span>Duration</span>
+            <b>{interview.duration || "30 min"}</b>
+          </div>
 
           <div className="progress-detail">
 

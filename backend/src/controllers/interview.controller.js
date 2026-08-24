@@ -33,53 +33,46 @@ export const startInterview = async (req, res) => {
 
 
     // -----------------------------
-    // 2. Find user's resume
-    // -----------------------------
-
-    const resume = await Resume.findOne({
-      userId: userId,
-    }).sort({
-      createdAt: -1,
-    });
-
-
-    if (!resume) {
-
-      return res.status(404).json({
-        success: false,
-        message: "Please upload a resume first",
-      });
-
-    }
-
-
-    // -----------------------------
-    // 3. Get category and setup settings
+    // 2. Get category, setup settings, and selected resume
     // -----------------------------
 
     const {
+      resumeId,
       category,
       difficulty,
       interviewerStyle,
       duration,
     } = req.body;
 
-    if (!category || !difficulty || !interviewerStyle || !duration) {
+    if (!resumeId || !category || !difficulty || !interviewerStyle || !duration) {
       return res.status(400).json({
         success: false,
-        message: "Required options missing: category, difficulty, interviewerStyle, duration",
+        message: "Required options missing: resumeId, category, difficulty, interviewerStyle, duration",
+      });
+    }
+
+    const resume = await Resume.findOne({
+      _id: resumeId,
+      userId: userId,
+    });
+
+    if (!resume) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume not found or access denied",
       });
     }
 
     const totalQuestions = getQuestionCount(duration);
 
     // -----------------------------
-    // 4. Call Python AI service
+    // 3. Call Python AI service
     // -----------------------------
 
     const aiResponse = await axios.post(
       `${AI_SERVICE_URL}/api/interview/start`,
       {
+        resume_id: resume._id,
         collection_id:
           resume.chromaCollectionId,
 
@@ -93,7 +86,7 @@ export const startInterview = async (req, res) => {
 
 
     // -----------------------------
-    // 5. Get AI response
+    // 4. Get AI response
     // -----------------------------
 
     const {
@@ -103,7 +96,7 @@ export const startInterview = async (req, res) => {
 
 
     // -----------------------------
-    // 6. Save interview in MongoDB
+    // 5. Save interview in MongoDB
     // -----------------------------
 
     const interview =
@@ -112,6 +105,7 @@ export const startInterview = async (req, res) => {
         userId: userId,
 
         resumeId: resume._id,
+        resumeFileName: resume.fileName,
         sessionId: session_id,
         category: category,
         difficulty: difficulty,
