@@ -543,30 +543,86 @@ export const getInterviewReport = async (req, res) => {
   }
 };
 
-export const getInterviewHistory = async (
-  req,
-  res
-) => {
-
+export const getInterviewHistory = async (req, res) => {
   try {
 
-    const interviews =
-      await Interview.find({
-        userId: req.user._id,
-      })
+    // Get only completed interviews
+    const interviews = await Interview.find({
+      userId: req.user._id,
+      status: "completed",
+    })
       .sort({
         createdAt: -1,
       })
       .select(
-        "category status overallScore questionsAnswered createdAt"
-      );
+        "_id category status createdAt"
+      )
+      .lean();
+
+
+    // Calculate score for every interview
+    const history = await Promise.all(
+
+      interviews.map(async (interview) => {
+
+        const answers =
+          await QuestionAnswer.find({
+            interviewId: interview._id,
+          })
+            .select("score")
+            .lean();
+
+
+        // Total score
+        const totalScore =
+          answers.reduce(
+            (sum, item) =>
+              sum + Number(item.score || 0),
+            0
+          );
+
+
+        // Average score out of 10
+        const overallScore =
+          answers.length > 0
+            ? Number(
+                (
+                  totalScore /
+                  answers.length
+                ).toFixed(1)
+              )
+            : 0;
+
+
+        return {
+
+          _id: interview._id,
+
+          category:
+            interview.category,
+
+          status:
+            interview.status,
+
+          overallScore,
+
+          questionsAnswered:
+            answers.length,
+
+          createdAt:
+            interview.createdAt,
+
+        };
+
+      })
+    );
 
 
     return res.status(200).json({
 
       success: true,
 
-      interviews,
+      interviews: history,
 
     });
 
