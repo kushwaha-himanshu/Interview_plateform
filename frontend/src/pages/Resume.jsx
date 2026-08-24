@@ -14,7 +14,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardLayout from "../components/DashboardLayout";
-import Topbar from "../components/Topbar";
 import ResumeUploader from "../components/ResumeUploader";
 import api from "../services/api";
 import "./Resume.css";
@@ -225,7 +224,6 @@ export default function Resume() {
   if (loadingResume) {
     return (
       <DashboardLayout>
-        <Topbar avatarText="NG" />
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "calc(100vh - 100px)", color: "#fff" }}>
           <p>Loading resume analysis...</p>
         </div>
@@ -235,7 +233,6 @@ export default function Resume() {
 
   return (
     <DashboardLayout>
-      <Topbar avatarText="NG" />
       <div className="resume-page">
         <header className="resume-heading">
           <Link to="/dashboard">

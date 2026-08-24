@@ -13,7 +13,6 @@ import {
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import DashboardLayout from "../components/DashboardLayout";
-import NotificationsBell from "../components/NotificationsBell";
 import api from "../services/api";
 import "./Coach.css";
 import React from "react";
@@ -452,19 +451,6 @@ export default function Coach() {
     const isExpired = plan === "pro" && status === "expired";
     return (
       <DashboardLayout className="coach-page">
-        <header className="coach-topbar" style={{ borderBottom: "1px solid rgba(74, 68, 85, 0.2)" }}>
-          <div className="coach-brand-mobile">
-            <Menu size={18} />
-            <span>MindFlare</span>
-          </div>
-          <div className="coach-top-actions">
-            <NotificationsBell size={18} />
-            <button type="button" aria-label="Help">
-              <HelpCircle size={18} />
-            </button>
-          </div>
-        </header>
-
         <div style={{
           display: "flex",
           flexDirection: "column",
@@ -558,46 +544,30 @@ export default function Coach() {
     );
   }
 
-  return (
-    <DashboardLayout className="coach-page">
-      <header className="coach-topbar">
-        <div className="coach-brand-mobile">
-          <Menu size={18} />
-          <span>MindFlare</span>
-        </div>
-        <div className="coach-top-actions">
-          {/* Mobile progress button, shown below 1280px via CSS */}
-          <button 
-            type="button" 
-            onClick={() => setShowProgressModal(true)} 
-            className="mobile-progress-btn"
-            style={{
-              display: "none",
-              background: "rgba(124, 58, 237, 0.15)",
-              border: "1px solid rgba(124, 58, 237, 0.3)",
-              borderRadius: "20px",
-              padding: "6px 14px",
-              color: "#d2bbff",
-              fontSize: "12px",
-              fontWeight: "600",
-              cursor: "pointer",
-              marginRight: "8px"
-            }}
-          >
-            📊 Your Progress
-          </button>
-          
-          <NotificationsBell size={18} />
-          <button type="button" aria-label="Help">
-            <HelpCircle size={18} />
-          </button>
-          <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGl3MZGctbO3ljp0LjUO_dRjWC3rl2ufvD8Q8EyS--4obHQI7PDY-VA_HcAl-9Yot80Zfr9A-mSeAvk0qqdMEB3mtjGnCcu4DjjkOsdTtlxF3DlutMVJL9Ey34ADci3SiYHkHsnJjILr1-piA3LFJmvXZ6WeUwTZKsqByUWjjmGEdmkTl1PgqK-q2_zKA3lG29CXIifApgGTPeGMa_MnIA_gWkUyjM5SVMzjHfVIjtJQHdAX8CNIRs0g"
-            alt="Current user avatar"
-          />
-        </div>
-      </header>
+  const mobileProgressBtn = (
+    <button 
+      type="button" 
+      onClick={() => setShowProgressModal(true)} 
+      className="mobile-progress-btn"
+      style={{
+        display: "none",
+        background: "rgba(124, 58, 237, 0.15)",
+        border: "1px solid rgba(124, 58, 237, 0.3)",
+        borderRadius: "20px",
+        padding: "6px 14px",
+        color: "#d2bbff",
+        fontSize: "12px",
+        fontWeight: "600",
+        cursor: "pointer",
+        marginRight: "8px"
+      }}
+    >
+      📊 Your Progress
+    </button>
+  );
 
+  return (
+    <DashboardLayout className="coach-page" customTopbarActions={mobileProgressBtn}>
       <div className="coach-layout">
         <section className="coach-chat">
           <div className="coach-status" style={{ justifyContent: "space-between", width: "100%", maxWidth: "800px", margin: "0 auto" }}>

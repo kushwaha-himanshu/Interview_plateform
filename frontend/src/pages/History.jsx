@@ -24,7 +24,6 @@ import {
 } from "react-router-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
-import Topbar from "../components/Topbar";
 import api from "../services/api";
 
 import "./History.css";
@@ -329,10 +328,6 @@ export default function History() {
   return (
 
     <DashboardLayout>
-
-      <Topbar
-        avatarText="NG"
-      />
 
 
       <div className="history-page">

@@ -2,7 +2,6 @@ import { Trophy, TrendingUp, Code2, Braces, Network, Boxes, Cpu, Database, FileT
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
-import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
 import ChartCard from "../components/ChartCard";
 import SkillCard from "../components/SkillCard";
@@ -27,6 +26,21 @@ export default function Dashboard() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        if (res.data?.success) {
+          setUser(res.data.user);
+        }
+      } catch (err) {
+        console.error("Failed to load user in dashboard:", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -66,10 +80,18 @@ export default function Dashboard() {
     fetchAnalytics();
   }, []);
 
+  const initials = user?.fullname
+    ? user.fullname
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .substring(0, 2)
+    : "US";
+
   if (loading) {
     return (
       <DashboardLayout>
-        <Topbar avatarSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAlcdkvLowBbvFlNiJVsUp-yo7xiuRNaHOxKjbzbA2Plk8AA137PIKbaVhUWcHWxXtNk1iajrfvm_DzSBdiWHjrmvaAU7m3M5PBlzYaeHb8QlfvuLBtei04_alPdnhlOkOWTw1F2CsggzCm5OpOn1KsEGAz7PdHBkaagEvT7NVn3vsgEGimKl97OXs_owGbsgvHBobimQN9dGtKMDIDLHZGkik1HAtWpzv3yL3fE3H4isYEH3l6VQ5-pA" />
         <div className="dashboard-content" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "300px" }}>
           <p>Loading your dashboard details...</p>
         </div>
@@ -80,7 +102,6 @@ export default function Dashboard() {
   if (error || !analytics) {
     return (
       <DashboardLayout>
-        <Topbar avatarSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAlcdkvLowBbvFlNiJVsUp-yo7xiuRNaHOxKjbzbA2Plk8AA137PIKbaVhUWcHWxXtNk1iajrfvm_DzSBdiWHjrmvaAU7m3M5PBlzYaeHb8QlfvuLBtei04_alPdnhlOkOWTw1F2CsggzCm5OpOn1KsEGAz7PdHBkaagEvT7NVn3vsgEGimKl97OXs_owGbsgvHBobimQN9dGtKMDIDLHZGkik1HAtWpzv3yL3fE3H4isYEH3l6VQ5-pA" />
         <div className="dashboard-content" style={{ padding: "20px", color: "#ef4444" }}>
           <h3>Error loading dashboard</h3>
           <p>{error || "Please complete an interview first."}</p>
@@ -141,8 +162,6 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <Topbar avatarSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAlcdkvLowBbvFlNiJVsUp-yo7xiuRNaHOxKjbzbA2Plk8AA137PIKbaVhUWcHWxXtNk1iajrfvm_DzSBdiWHjrmvaAU7m3M5PBlzYaeHb8QlfvuLBtei04_alPdnhlOkOWTw1F2CsggzCm5OpOn1KsEGAz7PdHBkaagEvT7NVn3vsgEGimKl97OXs_owGbsgvHBobimQN9dGtKMDIDLHZGkik1HAtWpzv3yL3fE3H4isYEH3l6VQ5-pA" />
-      
       <div className="dashboard-content">
         <motion.header
           className="welcome"
@@ -150,7 +169,7 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1>
-            WELCOME Buddy <span>👋</span>
+            WELCOME {user?.fullname ? user.fullname.split(" ")[0] : "Buddy"} <span>👋</span>
           </h1>
           <p>Ready for your next interview?</p>
         </motion.header>

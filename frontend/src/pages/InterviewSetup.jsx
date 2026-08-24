@@ -14,7 +14,6 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
-import Topbar from "../components/Topbar";
 import "./InterviewSetup.css";
 
 const categories = [
@@ -120,7 +119,6 @@ export default function InterviewSetup() {
   };
   return (
     <DashboardLayout>
-      <Topbar avatarText="NG" />
       <section className="setup-page">
         <header className="setup-heading">
           <Link to="/dashboard">
