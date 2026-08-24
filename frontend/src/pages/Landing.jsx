@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import FeatureCard from "../components/FeatureCard";
 import brainImage from "../assets/mindflare-neural-brain.png";
+import { useAuth } from "../context/AuthContext";
 
 const badges = [
   [Sparkles, "AI Powered", "purple"],
@@ -23,6 +24,7 @@ const badges = [
 ];
 
 export default function Landing() {
+  const { isAuthenticated } = useAuth();
   return (
     <div className="app-shell">
       <Navbar />
@@ -53,9 +55,15 @@ export default function Landing() {
               interview with our hyper-personalized AI coach.
             </p>
             <div className="hero-actions">
-              <Link className="primary-button" to="/signup">
-                Start Free Interview <ArrowRight size={19} />
-              </Link>
+              {isAuthenticated ? (
+                <Link className="primary-button" to="/dashboard">
+                  Go to Dashboard <ArrowRight size={19} />
+                </Link>
+              ) : (
+                <Link className="primary-button" to="/signup">
+                  Start Free Interview <ArrowRight size={19} />
+                </Link>
+              )}
               <a className="secondary-button" href="#features">
                 Explore Demo <PlayCircle size={19} />
               </a>

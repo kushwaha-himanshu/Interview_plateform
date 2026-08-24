@@ -1,38 +1,14 @@
-import { Search, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import NotificationsBell from "./NotificationsBell";
 import ThemeToggle from "./ThemeToggle";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
-export default function Topbar({ placeholder = "Search...", customActions = null }) {
+export default function Topbar({ customActions = null }) {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, logoutUser } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get("/auth/me");
-        if (res.data?.success) {
-          setUser(res.data.user);
-        }
-      } catch (err) {
-        console.error("Topbar user load error:", err);
-      }
-    };
-    fetchUser();
-
-    const handleProfileChange = () => {
-      fetchUser();
-    };
-    window.addEventListener("mindflare-profile-change", handleProfileChange);
-    window.addEventListener("mindflare-pro-change", handleProfileChange);
-    return () => {
-      window.removeEventListener("mindflare-profile-change", handleProfileChange);
-      window.removeEventListener("mindflare-pro-change", handleProfileChange);
-    };
-  }, []);
 
   const getInitials = (name) => {
     if (!name) return "US";
@@ -44,24 +20,12 @@ export default function Topbar({ placeholder = "Search...", customActions = null
   };
 
   const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await logoutUser();
+    navigate("/");
   };
 
   return (
-    <header className="dashboard-topbar">
-      {placeholder ? (
-        <label className="dashboard-search">
-          <Search size={19} />
-          <input placeholder={placeholder} readOnly style={{ cursor: "default" }} />
-        </label>
-      ) : (
-        <div style={{ flex: 1 }} />
-      )}
+    <header className="dashboard-topbar" style={{ justifyContent: "flex-end" }}>
       <div className="topbar-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "12px" }}>
         {customActions}
         <NotificationsBell size={20} />

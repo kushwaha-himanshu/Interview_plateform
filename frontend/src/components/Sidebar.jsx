@@ -6,7 +6,7 @@ import {
    LogOut,
   Check,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { sidebarLinks } from "../data/navigationData";
 import {
@@ -115,7 +115,7 @@ const handleLogout = async () => {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">
+      <Link to="/" className="sidebar-brand" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", cursor: "pointer", transition: "opacity 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85} onMouseLeave={(e) => e.currentTarget.style.opacity = 1}>
         <span className="brand-icon">
           <BrainCircuit size={22} />
         </span>
@@ -123,7 +123,7 @@ const handleLogout = async () => {
           <strong>MindFlare</strong>
           <small>AI Career Engine</small>
         </div>
-      </div>
+      </Link>
       <nav>
         {sidebarLinks.map(({ icon: Icon, text, to }) => (
           <NavLink

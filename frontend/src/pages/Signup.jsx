@@ -5,6 +5,7 @@ import AuthInput from "../components/AuthInput";
 import AuthLayout from "../components/AuthLayout";
 import GoogleIcon from "../components/GoogleIcon";
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 import {
   signInWithPopup,
@@ -19,6 +20,13 @@ import {
 
 export default function Signup() {
   const navigate = useNavigate();
+  const { isAuthenticated, loginUser } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
 
 const [fullname, setFullname] = useState("");
@@ -83,21 +91,23 @@ const handleGoogleSignIn = async () => {
       );
 
 
-      localStorage.setItem(
-  "userName",
-  response.data.user?.fullname || "User"
-);
+      if (response.data?.user) {
+        loginUser(response.data.user);
+      }
 
       localStorage.setItem(
-  "userEmail",
-  response.data.user.email
-);
+        "userName",
+        response.data.user?.fullname || "User"
+      );
+      localStorage.setItem(
+        "userEmail",
+        response.data.user?.email
+      );
 
-
-    console.log(
-      "Backend Google login:",
-      response.data
-    );
+      console.log(
+        "Backend Google login:",
+        response.data
+      );
 
 
     navigate("/dashboard");
@@ -138,6 +148,10 @@ const handleSubmit = async (e) => {
         password,
       }
     );
+
+    if (response.data?.user) {
+      loginUser(response.data.user);
+    }
 
     console.log(
       "Signup successful:",

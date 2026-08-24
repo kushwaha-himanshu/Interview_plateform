@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import api from "../services/api";
 import { useSubscription } from "../context/SubscriptionContext";
+import { useAuth } from "../context/AuthContext";
 import "./Settings.css";
 
 export default function Settings() {
   const navigate = useNavigate();
   const { isPro, plan, status, startDate, endDate, loading: subLoading } = useSubscription();
+  const { user, loginUser, logoutUser } = useAuth();
 
-  const [user, setUser] = useState(null);
-  const [profileLoading, setProfileLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // Simple mock preference toggle state
@@ -32,41 +32,25 @@ export default function Settings() {
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
-    fullname: ""
+    fullname: user?.fullname || ""
   });
   const [profileError, setProfileError] = useState("");
   const [profileSuccess, setProfileSuccess] = useState("");
 
-  // Load authenticated user profile details on mount
+  // Sync profile form when user context is loaded
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setProfileLoading(true);
-        const res = await api.get("/auth/me");
-        if (res.data?.success) {
-          setUser(res.data.user);
-          setProfileForm({ fullname: res.data.user.fullname || "" });
-        }
-      } catch (err) {
-        console.error("Failed to load user profile:", err);
-      } finally {
-        setProfileLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+    if (user) {
+      setProfileForm({ fullname: user.fullname || "" });
+    }
+  }, [user]);
 
   const handlePreferenceToggle = (key) => {
     setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await logoutUser();
+    navigate("/");
   };
 
   // Dynamically load Razorpay Checkout script
@@ -188,7 +172,7 @@ export default function Settings() {
 
     try {
       // Simulate profile updating locally
-      setUser(prev => ({ ...prev, fullname: profileForm.fullname }));
+      loginUser({ ...user, fullname: profileForm.fullname });
       setProfileSuccess("Profile updated successfully!");
       setTimeout(() => setShowProfileModal(false), 1500);
     } catch (err) {
@@ -206,7 +190,7 @@ export default function Settings() {
     : "US";
 
   return (
-    <DashboardLayout topbarPlaceholder="Search settings...">
+    <DashboardLayout>
 
       <section className="settings-page">
         <header className="settings-heading">
@@ -214,7 +198,7 @@ export default function Settings() {
           <p>Configure your profile details, subscriptions, and notifications.</p>
         </header>
 
-        {profileLoading || subLoading ? (
+        {!user || subLoading ? (
           <div style={{ color: "#ccc3d8", textAlign: "center", padding: "40px" }}>
             Loading settings configuration...
           </div>

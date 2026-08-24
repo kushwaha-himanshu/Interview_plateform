@@ -12,6 +12,7 @@ import Report from "./pages/Report";
 import History from "./pages/History";
 import Coach from "./pages/Coach";
 import Settings from "./pages/Settings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const PlaceholderPage = ({ title }) => (
   <main className="placeholder-page">
@@ -26,16 +27,86 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/resume" element={<Resume />} />
-      <Route path="/coach" element={<Coach />} />
-      <Route path="/interview/setup" element={<InterviewSetup />} />
-      <Route path="/interview" element={<Interview />} />
-      <Route path="/evaluation" element={<Evaluation />} />
-      <Route path="/analytics" element={<Analytics />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/report" element={<Report />} />
-      <Route path="/settings" element={<Settings />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/resume"
+        element={
+          <ProtectedRoute>
+            <Resume />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/coach"
+        element={
+          <ProtectedRoute>
+            <Coach />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interview/setup"
+        element={
+          <ProtectedRoute>
+            <InterviewSetup />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interview"
+        element={
+          <ProtectedRoute>
+            <Interview />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/evaluation"
+        element={
+          <ProtectedRoute>
+            <Evaluation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/report"
+        element={
+          <ProtectedRoute>
+            <Report />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

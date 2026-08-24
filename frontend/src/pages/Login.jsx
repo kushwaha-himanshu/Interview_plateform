@@ -1,11 +1,12 @@
 import { ArrowRight, LockKeyhole, Mail, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthInput from "../components/AuthInput";
 import AuthLayout from "../components/AuthLayout";
 import GoogleIcon from "../components/GoogleIcon";
 import api from "../services/api";
 import { signInWithPopup } from "firebase/auth";
+import { useAuth } from "../context/AuthContext";
 
 import {
   auth,
@@ -14,6 +15,7 @@ import {
 
 export default function Login() {
   const navigate = useNavigate();
+  const { isAuthenticated, loginUser } = useAuth();
   
   // Modals state
   const [showForgot, setShowForgot] = useState(false);
@@ -22,61 +24,54 @@ export default function Login() {
   const [forgotLoading, setForgotLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // const [showGoogle, setShowGoogle] = useState(false);
-  // const [googleLoading, setGoogleLoading] = useState(false);
-  // const [selectedGoogleAccount, setSelectedGoogleAccount] = useState("");
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const submit = async (event) => {
+    event.preventDefault();
 
-  event.preventDefault();
+    try {
+      const formData = new FormData(event.currentTarget);
+      const email = formData.get("email");
+      const password = formData.get("password");
 
-  try {
+      const response = await api.post(
+        "/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
-    const formData =
-      new FormData(event.currentTarget);
-
-    const email =
-      formData.get("email");
-
-    const password =
-      formData.get("password");
-
-
-    await api.post(
-      "/auth/login",
-      {
-        email,
-        password,
+      if (response.data?.user) {
+        loginUser(response.data.user);
       }
-    );
 
-localStorage.setItem(
-  "userName",
-  response.data.user?.fullname || "User"
-);
-    localStorage.setItem(
-  "userEmail",
-  response.data.user?.email || email
-);
+      localStorage.setItem(
+        "userName",
+        response.data.user?.fullname || "User"
+      );
+      localStorage.setItem(
+        "userEmail",
+        response.data.user?.email || email
+      );
 
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        error
+      );
 
-    navigate("/dashboard");
-
-
-  } catch (error) {
-
-    console.error(
-      "Login failed:",
-      error
-    );
-
-    alert(
-      error.response?.data?.message ||
-      "Login failed"
-    );
-
-  }
-};
+      alert(
+        error.response?.data?.message ||
+        "Login failed"
+      );
+    }
+  };
 
   const handleForgotSubmit = (e) => {
     e.preventDefault();
@@ -121,25 +116,25 @@ localStorage.setItem(
     );
 
 
-    localStorage.setItem(
-  "userName",
-  response.data.user?.fullname || "User"
-);
+      if (response.data?.user) {
+        loginUser(response.data.user);
+      }
 
-    localStorage.setItem(
-  "userEmail",
-  response.data.user?.email
-);
+      localStorage.setItem(
+        "userName",
+        response.data.user?.fullname || "User"
+      );
+      localStorage.setItem(
+        "userEmail",
+        response.data.user?.email
+      );
 
+      console.log(
+        "Google login successful:",
+        response.data
+      );
 
-
-    console.log(
-      "Google login successful:",
-      response.data
-    );
-
-    // Login successful
-    navigate("/dashboard");
+      navigate("/dashboard");
 
   } catch (error) {
     console.error(
