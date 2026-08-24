@@ -50,6 +50,15 @@ export default function Login() {
       }
     );
 
+localStorage.setItem(
+  "userName",
+  response.data.user?.fullname || "User"
+);
+    localStorage.setItem(
+  "userEmail",
+  response.data.user?.email || email
+);
+
 
     navigate("/dashboard");
 
@@ -92,6 +101,13 @@ export default function Login() {
       firebaseUser
     );
 
+
+  
+
+
+
+ 
+
     // Get Firebase ID token
     const idToken =
       await firebaseUser.getIdToken();
@@ -103,6 +119,19 @@ export default function Login() {
         idToken,
       }
     );
+
+
+    localStorage.setItem(
+  "userName",
+  response.data.user?.fullname || "User"
+);
+
+    localStorage.setItem(
+  "userEmail",
+  response.data.user?.email
+);
+
+
 
     console.log(
       "Google login successful:",

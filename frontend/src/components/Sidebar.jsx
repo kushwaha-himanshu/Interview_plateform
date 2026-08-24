@@ -223,7 +223,7 @@ const handleLogout = async () => {
                   <div className="upgrade-pricing-card">
                     <span className="upgrade-price-title">Pro Plan</span>
                     <div className="upgrade-price">
-                      $15<span>/mo</span>
+                      499 Rs<span>/mo</span>
                     </div>
                     <span className="upgrade-period">Cancel anytime</span>
                     <button

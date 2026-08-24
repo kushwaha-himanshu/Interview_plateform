@@ -65,6 +65,11 @@ const handleGoogleSignIn = async () => {
     );
 
 
+  
+
+
+
+
     const idToken =
       await user.getIdToken();
 
@@ -76,6 +81,17 @@ const handleGoogleSignIn = async () => {
           idToken,
         }
       );
+
+
+      localStorage.setItem(
+  "userName",
+  response.data.user?.fullname || "User"
+);
+
+      localStorage.setItem(
+  "userEmail",
+  response.data.user.email
+);
 
 
     console.log(
