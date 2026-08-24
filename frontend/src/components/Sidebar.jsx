@@ -3,11 +3,17 @@ import {
   Sparkles,
   Trophy,
   X,
+   LogOut,
   Check,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { sidebarLinks } from "../data/navigationData";
+import {
+  useNavigate
+} from "react-router-dom";
+
+import api from "../services/api";
 
 const PRO_KEY = "mindflare-pro";
 
@@ -30,6 +36,17 @@ export default function Sidebar() {
       window.dispatchEvent(new Event("mindflare-pro-change"));
     }, 1500);
   };
+
+  const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try {
+    await api.post("/auth/logout");
+    navigate("/login");
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
 
   return (
     <aside className="sidebar">
@@ -56,6 +73,31 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+  <button
+  type="button"
+  onClick={handleLogout}
+  style={{
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    padding: "12px 18px",
+    marginTop: "6px",
+    border: "none",
+    borderRadius: "10px",
+    background: "transparent",
+    color: "#c8c3d8",
+    fontSize: "16px",
+    fontWeight: 500,
+    cursor: "pointer",
+    textAlign: "left",
+  }}
+>
+  <LogOut size={19} />
+  Logout
+</button>
+
       {isPro ? (
         <div className="premium-status-indicator" style={{ margin: "20px auto 10px" }}>
           <Trophy size={14} />
@@ -67,6 +109,8 @@ export default function Sidebar() {
           Upgrade to Pro
         </button>
       )}
+
+   
 
       {/* Upgrade pricing modal */}
       {showModal && (
