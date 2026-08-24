@@ -35,14 +35,42 @@ const interviewSchema = new mongoose.Schema(
       default: null,
     },
     overallScore: {
-  type: Number,
-  default: null,
-},
+      type: Number,
+      default: null,
+    },
 
-questionsAnswered: {
-  type: Number,
-  default: 0,
-},
+    questionsAnswered: {
+      type: Number,
+      default: 0,
+    },
+
+    difficulty: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Intermediate",
+    },
+
+    interviewerStyle: {
+      type: String,
+      enum: ["Friendly", "Professional", "Technical", "Stress Mode"],
+      default: "Professional",
+    },
+
+    duration: {
+      type: String,
+      enum: ["15 min", "30 min", "45 min"],
+      default: "30 min",
+    },
+
+    totalQuestions: {
+      type: Number,
+      default: 5,
+    },
+
+    currentQuestionNumber: {
+      type: Number,
+      default: 1,
+    },
   },
   {
     timestamps: true,

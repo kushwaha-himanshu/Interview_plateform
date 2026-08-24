@@ -11,6 +11,12 @@ resume context provided below.
 Interview Category:
 {category}
 
+Difficulty Level:
+{difficulty}
+
+Interviewer Style:
+{interviewer_style}
+
 Generate {num_questions} interview questions.
 
 Follow these rules strictly:
@@ -22,28 +28,37 @@ Follow these rules strictly:
    resume information or by asking the candidate to explain
    something explicitly mentioned in the resume.
 4. Questions must be relevant to the selected interview category.
-5. Do not repeat the same question.
-6. Questions should progress from easy to difficult.
-7. Prefer specific questions over generic questions.
-8. If the category is "technical", ask about technologies,
-   programming languages, frameworks, databases, or technical
-   skills mentioned in the resume.
-9. If the category is "projects", ask about projects,
-   implementation, technologies, challenges, architecture,
-   or decisions explicitly mentioned in the resume.
-10. If the category is "DSA", ask about DSA or competitive
+5. Adapt the questions to the selected difficulty level ({difficulty}):
+   - Beginner: Focus on fundamental concepts, straightforward questions, and avoid unnecessarily complex edge cases.
+   - Intermediate: Focus on practical understanding, reasoning, implementation/application, and moderate follow-ups.
+   - Advanced: Focus on deep technical reasoning, edge cases, optimization, architecture/design, and challenging follow-ups.
+6. Generate questions matching the selected interviewer style ({interviewer_style}):
+   - Friendly: Supportive, conversational, and encouraging tone.
+   - Professional: Realistic professional interview style, concise, and balanced.
+   - Technical: Technically deep, precise, and more technical questions.
+   - Stress Mode: Challenging, concise, pressure-style questions (still professional and appropriate).
+7. Do not repeat the same question.
+8. Questions should progress from easy to difficult.
+9. Prefer specific questions over generic questions.
+10. If the category is "technical", ask about technologies,
+    programming languages, frameworks, databases, or technical
+    skills mentioned in the resume.
+11. If the category is "projects", ask about projects,
+    implementation, technologies, challenges, architecture,
+    or decisions explicitly mentioned in the resume.
+12. If the category is "DSA", ask about DSA or competitive
     programming information explicitly mentioned in the resume.
-11. If the category is "HR", ask about achievements,
+13. If the category is "HR", ask about achievements,
     experiences, goals, or activities mentioned in the resume.
-12. If the category is "behavioral", ask scenario-based questions
+14. If the category is "behavioral", ask scenario-based questions
     related to experiences or achievements explicitly mentioned
     in the resume.
-13. If the category is "resume", ask questions that test whether
+15. If the category is "resume", ask questions that test whether
     the candidate can confidently explain the information written
     on their resume.
-14. Do not provide answers.
-15. Return ONLY the questions.
-16. Number the questions from 1 to {num_questions}.
+16. Do not provide answers.
+17. Return ONLY the questions.
+18. Number the questions from 1 to {num_questions}.
 
 If the provided context does not contain enough information to
 generate a question for the selected category, do not invent
@@ -257,8 +272,14 @@ Candidate Answer:
 Evaluation:
 {evaluation}
 
-Required Difficulty:
+Current Question Relative Difficulty (based on performance):
 {difficulty}
+
+Baseline Selected Difficulty:
+{selected_difficulty}
+
+Interviewer Style:
+{interviewer_style}
 
 Topics Already Covered:
 {covered_topics}
@@ -276,29 +297,38 @@ RULES:
 
 4. Consider the candidate's previous answer and evaluation.
 
-5. Adjust the difficulty according to the required difficulty.
+5. Adjust the difficulty according to the baseline difficulty ({selected_difficulty}) and required relative difficulty ({difficulty}):
+   - If baseline difficulty is Beginner: questions should focus on fundamental concepts and simple definitions (easy/medium).
+   - If baseline difficulty is Intermediate: questions should challenge practical implementation and understanding (medium/hard).
+   - If baseline difficulty is Advanced: questions should require deep optimization, architecture design, and challenging edge cases (hard/advanced).
 
-6. Do not repeat the previous question.
+6. Adapt the tone and style of the question to the selected interviewer style ({interviewer_style}):
+   - Friendly: Supportive, conversational, and encouraging tone.
+   - Professional: Realistic professional interview style, concise, and balanced.
+   - Technical: Technically deep, precise, and deep dive questions.
+   - Stress Mode: Challenging, concise, pressure-style follow-up questions.
 
-7. Do not ask about a topic that already appears in
+7. Do not repeat the previous question.
+
+8. Do not ask about a topic that already appears in
    Topics Already Covered unless a clarification is genuinely needed.
 
-8. Do not ask about the same subtopic for more than
+9. Do not ask about the same subtopic for more than
    2 consecutive questions.
 
-9. If the candidate performs poorly, you may ask ONE
-   clarification question about that concept.
+10. If the candidate performs poorly, you may ask ONE
+    clarification question about that concept.
 
-10. After clarification, move to another relevant
+11. After clarification, move to another relevant
     resume topic.
 
-11. Prefer unexplored skills, projects, technologies,
+12. Prefer unexplored skills, projects, technologies,
     coursework, or experiences from the resume.
 
-12. Maintain balanced coverage of the candidate's resume.
+13. Maintain balanced coverage of the candidate's resume.
 
-13. The next question should feel like a natural continuation
+14. The next question should feel like a natural continuation
     of a real technical interview.
 
-14. Return ONLY ONE interview question.
+15. Return ONLY ONE interview question.
 """

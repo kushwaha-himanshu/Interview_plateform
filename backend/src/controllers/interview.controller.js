@@ -8,6 +8,19 @@ const AI_SERVICE_URL =
   "http://localhost:8000";
 
 
+const getQuestionCount = (duration) => {
+  switch (duration) {
+    case "15 min":
+      return 5;
+    case "30 min":
+      return 8;
+    case "45 min":
+      return 12;
+    default:
+      return 5;
+  }
+};
+
 export const startInterview = async (req, res) => {
 
   try {
@@ -41,13 +54,24 @@ export const startInterview = async (req, res) => {
 
 
     // -----------------------------
-    // 3. Get category
+    // 3. Get category and setup settings
     // -----------------------------
 
     const {
-      category = "technical",
+      category,
+      difficulty,
+      interviewerStyle,
+      duration,
     } = req.body;
 
+    if (!category || !difficulty || !interviewerStyle || !duration) {
+      return res.status(400).json({
+        success: false,
+        message: "Required options missing: category, difficulty, interviewerStyle, duration",
+      });
+    }
+
+    const totalQuestions = getQuestionCount(duration);
 
     // -----------------------------
     // 4. Call Python AI service
@@ -60,8 +84,10 @@ export const startInterview = async (req, res) => {
           resume.chromaCollectionId,
 
         category: category,
-
-        num_questions: 5,
+        difficulty: difficulty,
+        interviewer_style: interviewerStyle,
+        duration: duration,
+        total_questions: totalQuestions,
       }
     );
 
@@ -73,8 +99,6 @@ export const startInterview = async (req, res) => {
     const {
       session_id,
       question,
-      question_number,
-      total_questions,
     } = aiResponse.data;
 
 
@@ -90,6 +114,11 @@ export const startInterview = async (req, res) => {
         resumeId: resume._id,
         sessionId: session_id,
         category: category,
+        difficulty: difficulty,
+        interviewerStyle: interviewerStyle,
+        duration: duration,
+        totalQuestions: totalQuestions,
+        currentQuestionNumber: 1,
 
         status: "in_progress",
 
@@ -114,10 +143,10 @@ export const startInterview = async (req, res) => {
         question: question,
 
         questionNumber:
-          question_number,
+          interview.currentQuestionNumber,
 
         totalQuestions:
-          total_questions,
+          interview.totalQuestions,
 
         status:
           interview.status,
@@ -266,6 +295,11 @@ export const submitInterviewAnswer = async (
       result.completed
         ? null
         : result.question;
+
+    interview.currentQuestionNumber =
+      result.completed
+        ? interview.totalQuestions
+        : result.question_number;
 
 
     // -----------------------------

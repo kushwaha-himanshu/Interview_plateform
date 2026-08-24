@@ -9,7 +9,9 @@ def generate_adaptive_question(
     answer,
     evaluation,
     difficulty,
-    covered_topics
+    covered_topics,
+    selected_difficulty="Intermediate",
+    interviewer_style="Professional"
 ):
 
     prompt = FOLLOWUP_PROMPT.format(
@@ -19,7 +21,9 @@ def generate_adaptive_question(
         answer=answer,
         evaluation=evaluation,
         difficulty=difficulty,
-        covered_topics=covered_topics
+        covered_topics=covered_topics,
+        selected_difficulty=selected_difficulty,
+        interviewer_style=interviewer_style
     )
 
     response = llm.invoke(prompt)

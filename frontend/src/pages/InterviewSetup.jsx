@@ -44,51 +44,55 @@ const [error, setError] = useState("");
   const select = (key, value) => setSettings({ ...settings, [key]: value });
 
   const startInterview = async () => {
-  setStarting(true);
-  setError("");
+    if (!category || !settings.difficulty || !settings.style || !settings.duration) {
+      setError("Please select all options before starting.");
+      return;
+    }
+    setStarting(true);
+    setError("");
 
-  try {
-    const response = await api.post(
-      "/interview/start",
-      {
-        category,
-        difficulty: settings.difficulty,
-        style: settings.style,
-        duration: settings.duration,
-      }
-    );
+    try {
+      const response = await api.post(
+        "/interview/start",
+        {
+          category,
+          difficulty: settings.difficulty,
+          interviewerStyle: settings.style,
+          duration: settings.duration,
+        }
+      );
 
-    console.log(
-      "Interview started:",
-      response.data
-    );
+      console.log(
+        "Interview started:",
+        response.data
+      );
 
-    const interview =
-      response.data.interview;
+      const interview =
+        response.data.interview;
 
-    // Send the interview data to Interview page
-    navigate("/interview", {
-      state: {
-        interview,
-      },
-    });
+      // Send the interview data to Interview page
+      navigate("/interview", {
+        state: {
+          interview,
+        },
+      });
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(
-      "Failed to start interview:",
-      error
-    );
+      console.error(
+        "Failed to start interview:",
+        error
+      );
 
-    setError(
-      error.response?.data?.message ||
-      "Failed to start interview. Please try again."
-    );
+      setError(
+        error.response?.data?.message ||
+        "Failed to start interview. Please try again."
+      );
 
-  } finally {
-    setStarting(false);
-  }
-};
+    } finally {
+      setStarting(false);
+    }
+  };
   return (
     <DashboardLayout>
       <Topbar avatarText="NG" />
@@ -157,6 +161,33 @@ const [error, setError] = useState("");
     {error}
   </p>
 )}
+        {/* =========================
+            INTERVIEW PREVIEW
+        ========================= */}
+        <div className="interview-preview-box" style={{
+          margin: "32px auto 16px",
+          padding: "20px",
+          borderRadius: "12px",
+          background: "#0d0d18",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
+          maxWidth: "500px",
+          textAlign: "center"
+        }}>
+          <h3 style={{ margin: "0 0 12px", color: "#d2bbff", fontSize: "16px" }}>AI Interview Preview</h3>
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap", marginBottom: "12px" }}>
+            <span style={{ background: "#122131", color: "#4cd7f6", padding: "4px 10px", borderRadius: "6px", fontSize: "13px" }}>{category}</span>
+            <span style={{ background: "#122131", color: "#4cd7f6", padding: "4px 10px", borderRadius: "6px", fontSize: "13px" }}>{settings.difficulty}</span>
+            <span style={{ background: "#122131", color: "#4cd7f6", padding: "4px 10px", borderRadius: "6px", fontSize: "13px" }}>{settings.style}</span>
+            <span style={{ background: "#122131", color: "#4cd7f6", padding: "4px 10px", borderRadius: "6px", fontSize: "13px" }}>{settings.duration}</span>
+          </div>
+          <p style={{ margin: "0 0 8px", color: "#fff", fontWeight: "600" }}>
+            {settings.duration === "15 min" ? "5 questions" : settings.duration === "30 min" ? "8 questions" : "12 questions"}
+          </p>
+          <p style={{ margin: 0, color: "#ccc3d8", fontSize: "12px" }}>
+            Questions will adapt based on your answers.
+          </p>
+        </div>
+
         <div className="setup-action">
          <button
   onClick={startInterview}

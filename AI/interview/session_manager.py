@@ -8,7 +8,7 @@ from interview.final_report import generate_final_report
 sessions = {}
 
 
-def create_session(category, questions, context):
+def create_session(category, questions, context, difficulty="Intermediate", interviewer_style="Professional", duration="30 min", total_questions=5):
 
     session_id = str(uuid.uuid4())
 
@@ -29,7 +29,11 @@ def create_session(category, questions, context):
         "scores": [],
 
         "context": context,
-        "status": "active"
+        "status": "active",
+        "difficulty": difficulty,
+        "interviewer_style": interviewer_style,
+        "duration": duration,
+        "total_questions": total_questions
     }
 
     sessions[session_id] = state
@@ -118,7 +122,7 @@ def submit_answer(session_id, answer, llm):
     #         "scores": state["scores"]
     #     }
 
-    if len(state["answers"]) >= 5:
+    if len(state["answers"]) >= state.get("total_questions", 5):
 
       state["status"] = "completed"
 
@@ -160,7 +164,11 @@ def submit_answer(session_id, answer, llm):
 
         difficulty=difficulty,
 
-        covered_topics=state["covered_topics"]
+        covered_topics=state["covered_topics"],
+
+        selected_difficulty=state.get("difficulty", "Intermediate"),
+
+        interviewer_style=state.get("interviewer_style", "Professional")
     )
 
     state["current_question"] = next_question

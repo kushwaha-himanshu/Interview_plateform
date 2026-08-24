@@ -8,7 +8,10 @@ from llm.gemini_client import llm
 def generate_questions(
     collection_id: str,
     category: str,
-    num_questions: int = 5
+    num_questions: int = 5,
+    difficulty: str = "Intermediate",
+    interviewer_style: str = "Professional",
+    duration: str = "30 min"
 ):
 
     query = f"""
@@ -35,7 +38,9 @@ def generate_questions(
     prompt = QUESTION_GENERATION_PROMPT.format(
         context=context,
         category=category,
-        num_questions=num_questions
+        num_questions=num_questions,
+        difficulty=difficulty,
+        interviewer_style=interviewer_style
     )
 
     response = llm.invoke(prompt)

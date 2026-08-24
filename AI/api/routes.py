@@ -97,6 +97,10 @@ class StartInterviewRequest(BaseModel):
     collection_id: str
     category: str = "technical"
     num_questions: int = 5
+    difficulty: str = "Intermediate"
+    interviewer_style: str = "Professional"
+    duration: str = "30 min"
+    total_questions: int = 5
 
 
 @router.post("/start")
@@ -106,11 +110,15 @@ def start_interview(
 
     try:
 
+        total_qs = request.total_questions if request.total_questions else request.num_questions
         # 1. Generate questions from this resume
         questions_text = generate_questions(
             collection_id=request.collection_id,
             category=request.category,
-            num_questions=request.num_questions
+            num_questions=total_qs,
+            difficulty=request.difficulty,
+            interviewer_style=request.interviewer_style,
+            duration=request.duration
         )
 
         # 2. Convert AI response into a list
@@ -155,7 +163,11 @@ def start_interview(
         session_id, state = create_session(
             category=request.category,
             questions=questions,
-            context=context
+            context=context,
+            difficulty=request.difficulty,
+            interviewer_style=request.interviewer_style,
+            duration=request.duration,
+            total_questions=total_qs
         )
 
         return {

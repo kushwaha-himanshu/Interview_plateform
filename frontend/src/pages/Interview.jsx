@@ -343,7 +343,7 @@ const stopSpeaking = () => {
               }
 
               difficulty={
-                interview.difficulty
+                interview.difficulty || "Intermediate"
               }
             />
 
