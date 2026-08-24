@@ -14,11 +14,12 @@ import {
 } from "react-router-dom";
 
 import api from "../services/api";
-
 import { useSubscription } from "../context/SubscriptionContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
   const { isPro, loading: subLoading } = useSubscription();
+  const { logoutUser } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -105,12 +106,8 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
 const handleLogout = async () => {
-  try {
-    await api.post("/auth/logout");
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
+  await logoutUser();
+  navigate("/");
 };
 
   return (
@@ -163,7 +160,11 @@ const handleLogout = async () => {
   Logout
 </button>
 
-      {isPro ? (
+      {subLoading ? (
+        <div style={{ margin: "20px auto 10px", height: "42px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ color: "#958da1", fontSize: "12px" }}>Loading status...</span>
+        </div>
+      ) : isPro ? (
         <div className="premium-status-indicator" style={{ margin: "20px auto 10px" }}>
           <Trophy size={14} />
           <span>PRO MEMBER</span>
