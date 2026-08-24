@@ -6,6 +6,7 @@ import paymentRoutes from "./routes/payment_route.js"
 import resumeRoutes from "./routes/resume.routes.js";
 import interviewRoutes
   from "./routes/interview.routes.js";
+import coachRoutes from "./routes/coach.routes.js";
 const app=express();
 app.use(
     cors({
@@ -27,4 +28,5 @@ app.use(
   "/api/interview",
   interviewRoutes
 );
+app.use("/api/coach", coachRoutes);
 export {app}

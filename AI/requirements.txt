@@ -22,5 +22,8 @@ chromadb
 langchain-google-genai
 google-genai
 
+# Groq
+langchain-groq
+
 # PDF / HTML processing
 beautifulsoup4

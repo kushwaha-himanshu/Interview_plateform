@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import router
+from api.coach_routes import coach_router
 
 
 app = FastAPI(
@@ -38,6 +39,11 @@ app.add_middleware(
 app.include_router(
     router,
     prefix="/api/interview"
+)
+
+app.include_router(
+    coach_router,
+    prefix="/api/coach"
 )
 
 
