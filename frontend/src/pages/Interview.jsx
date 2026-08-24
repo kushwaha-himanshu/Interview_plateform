@@ -142,18 +142,40 @@ export default function Interview() {
 
       if (data.completed) {
 
-        navigate("/evaluation", {
-          state: {
-            interviewId: interview.id,
-            evaluation: data.evaluation,
-            score: data.score,
-            completed: true,
-          },
-        });
+  try {
 
-        return;
-      }
+    // Get evaluations of ALL questions
+    const reportResponse =
+      await api.get(
+        `/interview/${interview.id}/report`
+      );
 
+    console.log(
+      "Final interview report:",
+      reportResponse.data
+    );
+
+    navigate("/evaluation", {
+      state: {
+        interviewId: interview.id,
+        report: reportResponse.data.report,
+      },
+    });
+
+  } catch (reportError) {
+
+    console.error(
+      "Failed to get final evaluation:",
+      reportError
+    );
+
+    setError(
+      "Interview completed, but final evaluation could not be loaded."
+    );
+  }
+
+  return;
+}
 
       // --------------------------------
       // Next question available

@@ -493,3 +493,4 @@ export const getInterviewReport = async (req, res) => {
     });
   }
 };
+

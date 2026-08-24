@@ -49,8 +49,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
 
-
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.5-flash",
+    model="gemini-3.5-flash-lite",
     temperature=0
 )
