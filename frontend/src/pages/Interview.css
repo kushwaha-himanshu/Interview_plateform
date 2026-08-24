@@ -398,3 +398,14 @@
     gap: 36px;
   }
 }
+
+
+
+.voice-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}

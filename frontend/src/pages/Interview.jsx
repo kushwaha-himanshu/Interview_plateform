@@ -1,9 +1,11 @@
 import {
   ArrowLeft,
   Clock3,
-  Mic,
+  
   Send,
   Square,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 import {
@@ -22,6 +24,11 @@ import api from "../services/api";
 
 import "./Interview.css";
 
+import VoiceRecorder
+  from "../components/voiceRecorder";
+
+import QuestionSpeaker
+  from "../components/questionSpeaker";
 
 export default function Interview() {
 
@@ -177,6 +184,35 @@ export default function Interview() {
   return;
 }
 
+const speakQuestion = () => {
+
+  if (!interview?.question) {
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const speech =
+    new SpeechSynthesisUtterance(
+      interview.question
+    );
+
+  speech.lang = "en-US";
+  speech.rate = 1;
+  speech.pitch = 1;
+
+  window.speechSynthesis.speak(
+    speech
+  );
+};
+
+
+const stopSpeaking = () => {
+
+  window.speechSynthesis.cancel();
+
+};
+
       // --------------------------------
       // Next question available
       // --------------------------------
@@ -196,6 +232,8 @@ export default function Interview() {
         coveredTopics:
           data.coveredTopics,
       });
+
+
 
 
       // Clear previous answer
@@ -309,6 +347,12 @@ export default function Interview() {
               }
             />
 
+            <QuestionSpeaker
+  text={
+    interview.question
+  }
+/>
+
 
             {/* =========================
                 ANSWER
@@ -331,6 +375,31 @@ export default function Interview() {
                 disabled={submitting}
 
               />
+               <VoiceRecorder
+
+    disabled={submitting}
+
+    onTranscript={(transcript) => {
+
+      setAnswer((previousAnswer) => {
+
+        if (!previousAnswer.trim()) {
+
+          return transcript;
+
+        }
+
+        return (
+          previousAnswer +
+          " " +
+          transcript
+        );
+
+      });
+
+    }}
+
+  />
 
 
               {error && (
@@ -349,7 +418,7 @@ export default function Interview() {
 
               <footer>
 
-
+{/* 
                 <button
                   type="button"
                   disabled={submitting}
@@ -359,7 +428,31 @@ export default function Interview() {
 
                   Voice Answer
 
-                </button>
+                </button> */}
+
+
+              {/* <VoiceRecorder
+  disabled={submitting}
+  onTranscript={(transcript) => {
+
+    setAnswer((previousAnswer) => {
+
+      if (!previousAnswer.trim()) {
+
+        return transcript;
+
+      }
+
+      return (
+        previousAnswer +
+        " " +
+        transcript
+      );
+
+    });
+
+  }}
+/>   */}
 
 
                 <button
