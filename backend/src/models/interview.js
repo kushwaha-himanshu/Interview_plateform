@@ -34,6 +34,15 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    overallScore: {
+  type: Number,
+  default: null,
+},
+
+questionsAnswered: {
+  type: Number,
+  default: 0,
+},
   },
   {
     timestamps: true,
