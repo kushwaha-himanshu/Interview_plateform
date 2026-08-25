@@ -1,11 +1,12 @@
-import { LogOut } from "lucide-react";
+import { LogOut, BrainCircuit } from "lucide-react";
+import { Link } from "react-router-dom";
 import NotificationsBell from "./NotificationsBell";
 import ThemeToggle from "./ThemeToggle";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function Topbar({ customActions = null }) {
+export default function Topbar({ customActions = null, isMobileMenuOpen, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
   const { user, logoutUser } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -25,7 +26,42 @@ export default function Topbar({ customActions = null }) {
   };
 
   return (
-    <header className="dashboard-topbar" style={{ justifyContent: "flex-end" }}>
+    <header className="dashboard-topbar" style={{ justifyContent: "space-between", display: "flex", alignItems: "center" }}>
+      {/* Mobile Brand / Menu Toggle (visible only on mobile via CSS) */}
+      <div className="topbar-mobile-brand" style={{ display: "none", alignItems: "center", gap: "12px" }}>
+        <button
+          type="button"
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(true)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#ccc3d8",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "8px",
+          }}
+          aria-label="Open menu"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <Link to="/" className="topbar-logo" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+          <span className="brand-icon" style={{ width: "30px", height: "30px", borderRadius: "8px", display: "grid", placeItems: "center", background: "#7c3aed", color: "#ede0ff" }}>
+            <BrainCircuit size={16} />
+          </span>
+          <span style={{ color: "#d2bbff", fontSize: "18px", fontWeight: "700", letterSpacing: "-0.03em" }}>MindFlare</span>
+        </Link>
+      </div>
+
+      {/* Desktop spacer to push actions to the right */}
+      <div className="topbar-desktop-spacer" style={{ flex: 1 }}></div>
+
       <div className="topbar-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "12px" }}>
         {customActions}
         <NotificationsBell size={20} />

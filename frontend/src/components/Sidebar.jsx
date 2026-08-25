@@ -17,7 +17,7 @@ import api from "../services/api";
 import { useSubscription } from "../context/SubscriptionContext";
 import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar() {
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { isPro, loading: subLoading } = useSubscription();
   const { logoutUser } = useAuth();
   const [showModal, setShowModal] = useState(false);
@@ -104,31 +104,59 @@ export default function Sidebar() {
   };
 
   const navigate = useNavigate();
+  
+  const closeMenu = () => {
+    if (setIsMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  };
 
-const handleLogout = async () => {
-  await logoutUser();
-  navigate("/");
-};
+  const handleLogout = async () => {
+    await logoutUser();
+    closeMenu();
+    navigate("/");
+  };
+
+  const mainLinks = sidebarLinks.filter((link) => link.text !== "Settings");
+  const settingsLink = sidebarLinks.find((link) => link.text === "Settings");
 
   return (
-    <aside className="sidebar">
-      <Link to="/" className="sidebar-brand" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", cursor: "pointer", transition: "opacity 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85} onMouseLeave={(e) => e.currentTarget.style.opacity = 1}>
-        <span className="brand-icon">
-          <BrainCircuit size={22} />
-        </span>
-        <div>
-          <strong>MindFlare</strong>
-          <small>AI Career Engine</small>
-        </div>
-      </Link>
+    <aside className={`sidebar ${isMobileMenuOpen ? "mobile-open" : ""}`}>
+      <div className="sidebar-header">
+        <Link 
+          to="/" 
+          className="sidebar-brand" 
+          onClick={closeMenu}
+          style={{ transition: "opacity 0.2s" }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = 0.85} 
+          onMouseLeave={(e) => e.currentTarget.style.opacity = 1}
+        >
+          <span className="brand-icon">
+            <BrainCircuit size={22} />
+          </span>
+          <div>
+            <strong>MindFlare</strong>
+            <small>AI Career Engine</small>
+          </div>
+        </Link>
+        {/* <button
+          type="button"
+          className="mobile-close-btn"
+          onClick={closeMenu}
+          aria-label="Close menu"
+        >
+          <X size={24} />
+        </button> */}
+      </div>
       <nav>
-        {sidebarLinks.map(({ icon: Icon, text, to }) => (
+        {mainLinks.map(({ icon: Icon, text, to }) => (
           <NavLink
             key={text}
             className={({ isActive }) =>
               `side-link ${isActive ? "active" : ""}`
             }
             to={to}
+            onClick={closeMenu}
           >
             <Icon size={19} />
             {text}
@@ -136,45 +164,46 @@ const handleLogout = async () => {
         ))}
       </nav>
 
-  <button
-  type="button"
-  onClick={handleLogout}
-  style={{
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    gap: "14px",
-    padding: "12px 18px",
-    marginTop: "6px",
-    border: "none",
-    borderRadius: "10px",
-    background: "transparent",
-    color: "#c8c3d8",
-    fontSize: "16px",
-    fontWeight: 500,
-    cursor: "pointer",
-    textAlign: "left",
-  }}
->
-  <LogOut size={19} />
-  Logout
-</button>
+      <div className="sidebar-bottom-actions">
+        {settingsLink && (
+          <NavLink
+            key={settingsLink.text}
+            className={({ isActive }) =>
+              `side-link ${isActive ? "active" : ""}`
+            }
+            to={settingsLink.to}
+            onClick={closeMenu}
+          >
+            <settingsLink.icon size={19} />
+            {settingsLink.text}
+          </NavLink>
+        )}
 
-      {subLoading ? (
-        <div style={{ margin: "20px auto 10px", height: "42px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ color: "#958da1", fontSize: "12px" }}>Loading status...</span>
-        </div>
-      ) : isPro ? (
-        <div className="premium-status-indicator" style={{ margin: "20px auto 10px" }}>
-          <Trophy size={14} />
-          <span>PRO MEMBER</span>
-        </div>
-      ) : (
-        <button className="upgrade-button" onClick={() => { setShowModal(true); setSuccess(false); }}>
-          <Trophy size={18} />
-          Upgrade to Pro
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="side-logout-btn"
+        >
+          <LogOut size={19} />
+          Logout
         </button>
-      )}
+
+        {subLoading ? (
+          <div className="premium-loading-indicator">
+            <span style={{ color: "#958da1", fontSize: "12px" }}>Loading status...</span>
+          </div>
+        ) : isPro ? (
+          <div className="premium-status-indicator">
+            <Trophy size={14} />
+            <span>PRO MEMBER</span>
+          </div>
+        ) : (
+          <button className="upgrade-button" onClick={() => { setShowModal(true); setSuccess(false); closeMenu(); }}>
+            <Trophy size={18} />
+            Upgrade to Pro
+          </button>
+        )}
+      </div>
 
    
 
