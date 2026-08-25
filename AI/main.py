@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,13 +17,22 @@ app = FastAPI(
 # CORS
 # ==========================================
 
+allowed_origins_env = os.getenv("CORS_ALLOWED_ORIGINS")
+if allowed_origins_env:
+    origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+else:
+    origins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:8000",
+        "https://interview-plateform-three.vercel.app",
+        "https://interview-plateform-1-b12h.onrender.com"
+    ]
+
 app.add_middleware(
     CORSMiddleware,
 
-    allow_origins=[
-        "http://localhost:5174",
-        "http://localhost:8000"
-    ],
+    allow_origins=origins,
 
     allow_credentials=True,
 

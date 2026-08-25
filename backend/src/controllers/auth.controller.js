@@ -171,8 +171,8 @@ try{
   //set cookies
   const isProduction = process.env.NODE_ENV === "production";
   
-  res.cookie("accessToken",accessToken,{httpOnly:true,secure:isProduction,sameSite:"lax"});
-  res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:isProduction,sameSite:"lax"});
+  res.cookie("accessToken",accessToken,{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});
+  res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});
   return res.status(200).json({
     message:"User registered successfully",
     user:{
@@ -222,8 +222,8 @@ export const login =async (req , res) =>{
     }
     const isProduction = process.env.NODE_ENV === "production";
 
-    res.cookie("accessToken",accessToken,{httpOnly:true,secure:isProduction,sameSite:"lax"});
-    res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:isProduction,sameSite:"lax"});
+    res.cookie("accessToken",accessToken,{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});
+    res.cookie("refreshToken",refreshToken,{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});                                
 
 return res.status(200).json({
   message:"Login successful",
@@ -306,7 +306,7 @@ export const googleAuth = async (req, res) => {
         {
           httpOnly: true,
           secure:isProduction,
-          sameSite: "lax",
+          sameSite:isProduction?"none":"lax",
         }
       )
       .cookie(
@@ -315,7 +315,7 @@ export const googleAuth = async (req, res) => {
         {
           httpOnly: true,
           secure:isProduction,
-          sameSite: "lax",
+          sameSite:isProduction?"none":"lax",
         }
       );
 
@@ -361,8 +361,8 @@ export const logout=async(req,res)=>{
   )
   console.log("User logged out successfully", user);
   const isProduction = process.env.NODE_ENV === "production";
-res.clearCookie("accessToken",{httpOnly:true,secure:isProduction,sameSite:"lax"});
-res.clearCookie("refreshToken",{httpOnly:true,secure:isProduction,sameSite:"lax"});
+res.clearCookie("accessToken",{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});
+res.clearCookie("refreshToken",{httpOnly:true,secure:isProduction,sameSite:isProduction?"none":"lax"});
 return res.status(200).json({message:"Logout successful"});
   }catch(err){
     console.error("Logout error:",err);
