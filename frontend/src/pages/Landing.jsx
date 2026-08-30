@@ -64,8 +64,8 @@ export default function Landing() {
                   Start Free Interview <ArrowRight size={19} />
                 </Link>
               )}
-              <a className="secondary-button" href="#features">
-                Explore Demo <PlayCircle size={19} />
+              <a className="secondary-button" href="https://drive.google.com/file/d/1frUB8FBv_S87mV0AXHZOWxXe-0sN8ZG2/view?usp=sharing">
+                Demo Video <PlayCircle size={19} />
               </a>
             </div>
           </motion.div>
